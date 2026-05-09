@@ -7,7 +7,7 @@
 
 ---
 
-## Current Status: Phase 2 COMPLETE — Moving to Phase 3 (Dynamic Role Dashboards)
+## Current Status: Phase 3 COMPLETE — Moving to Phase 4 (Records List & View)
 
 ---
 
@@ -120,16 +120,16 @@ Doctors currently see ALL patient records in the system. Per business requiremen
 
 ---
 
-## Phase 3: Dynamic Doctor, Nurse & Patient Dashboards
+## Phase 3: Dynamic Doctor, Nurse & Patient Dashboards (COMPLETE)
 
 ### Tasks
-- [ ] **3.1** `doctor_dashboard.html` — Show ONLY assigned patients and their records
-- [ ] **3.2** `nurse_dashboard.html` — Show ONLY records created by this nurse
-- [ ] **3.3** `patient_dashboard.html` — Show own health data with FLAC applied
-- [ ] **3.4** Make each record row clickable -> links to `/records/<id>`
-- [ ] **3.5** Doctor dashboard shows "My Patients" panel (assigned patients list)
-- [ ] **3.6** Test FLAC: same record viewed as Doctor (full) vs Nurse (masked diagnosis) vs Patient (no notes)
-- [ ] **3.7** Commit & push
+- [x] **3.1** `doctor_dashboard.html` — Shows assigned patients + their records (dynamic)
+- [x] **3.2** `nurse_dashboard.html` — Shows only records created by this nurse (dynamic)
+- [x] **3.3** `patient_dashboard.html` — Shows own health records with FLAC applied (dynamic)
+- [x] **3.4** All record rows clickable → links to `/records/<id>`
+- [x] **3.5** Doctor dashboard shows "Assigned Patients" panel with patient info
+- [x] **3.6** All hardcoded fake patients removed (Elena Kostic, James Miller, etc.)
+- [x] **3.7** Commit & push
 
 ---
 
@@ -214,7 +214,7 @@ Doctors currently see ALL patient records in the system. Per business requiremen
 | 2026-05-09 | Setup | Initial backend modules, schema, seed, 21 templates | Done (uncommitted) |
 | 2026-05-10 | Phase 1 | Fix RBAC routing + doctor-patient assignments + admin assignment UI | Complete |
 | 2026-05-10 | Phase 2 | Dynamic admin dashboard — all hardcoded data replaced with Jinja vars | Complete |
-| | Phase 3 | Dynamic role dashboards (doctor, nurse, patient) | Pending |
+| 2026-05-10 | Phase 3 | Dynamic role dashboards — doctor, nurse, patient all data-driven | Complete |
 | | Phase 4 | Dynamic records list & view with FLAC | Pending |
 | | Phase 5 | Dynamic user management + assignment UI | Pending |
 | | Phase 6 | Dynamic audit logs & suspicious activity | Pending |

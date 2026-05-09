@@ -41,13 +41,11 @@ tailwind.config={theme:{extend:{colors:{
     </div>
   </div>
   <nav class="hidden md:flex items-center gap-5">
-    <a href="#" class="text-primary font-semibold text-sm">Dashboard</a>
-    <a href="#" class="text-secondary hover:text-on-surface transition-colors text-sm px-2 py-1 rounded-md hover:bg-slate-200/50">Appointments</a>
-    <a href="#" class="text-secondary hover:text-on-surface transition-colors text-sm px-2 py-1 rounded-md hover:bg-slate-200/50">Messages</a>
+    <a href="{{ url_for('dashboard_bp.patient_dashboard') }}" class="text-primary font-semibold text-sm">Dashboard</a>
   </nav>
   <div class="flex items-center gap-3">
     <button class="p-2 rounded-full hover:bg-slate-200/50 transition-colors"><span class="material-symbols-outlined text-on-surface-variant">notifications</span></button>
-    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-tertiary to-tertiary-container flex items-center justify-center text-white text-xs font-bold border-2 border-primary-fixed">SM</div>
+    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-tertiary to-tertiary-container flex items-center justify-center text-white text-xs font-bold border-2 border-primary-fixed">{{ user.full_name[:2] | upper }}</div>
   </div>
 </header>
 
@@ -72,11 +70,6 @@ tailwind.config={theme:{extend:{colors:{
     <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">medication</span> Medications</a>
     <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">vaccines</span> Immunizations</a>
   </nav>
-  <div class="p-4 bg-slate-100/50 m-4 rounded-xl">
-    <button class="w-full bg-gradient-to-r from-tertiary to-tertiary-container text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity">
-      <span class="material-symbols-outlined text-sm">calendar_add_on</span> Book Visit
-    </button>
-  </div>
   <div class="px-3 pb-6 space-y-0.5">
     <a href="#" class="flex items-center gap-3 px-4 py-2 text-slate-600 hover:bg-slate-100 text-sm rounded-lg"><span class="material-symbols-outlined text-sm">security</span> Privacy Settings</a>
     <a href="{{ url_for('auth_bp.logout') }}" class="flex items-center gap-3 px-4 py-2 text-error hover:bg-error/5 text-sm rounded-lg"><span class="material-symbols-outlined text-sm">logout</span> Sign Out</a>
@@ -89,15 +82,12 @@ tailwind.config={theme:{extend:{colors:{
   <!-- Welcome Hero -->
   <section class="mt-7 mb-8 relative overflow-hidden rounded-3xl bg-gradient-to-br from-tertiary/10 to-primary/5 p-8 flex flex-col md:flex-row items-center justify-between">
     <div class="relative z-10 max-w-xl">
-      <h1 class="text-3xl font-bold text-tertiary mb-2">Good morning, Sarah.</h1>
-      <p class="text-secondary text-lg mb-5">Your health is looking great! 1 upcoming appointment · 2 new lab results to review.</p>
+      <h1 class="text-3xl font-bold text-tertiary mb-2">Welcome, {{ user.full_name }}.</h1>
+      <p class="text-secondary text-lg mb-5">You have {{ records | length }} health record{{ 's' if records | length != 1 else '' }} on file. Review your records below.</p>
       <div class="flex gap-3 flex-wrap">
-        <button class="bg-tertiary text-white px-6 py-2.5 rounded-xl font-semibold shadow-lg shadow-tertiary/20 flex items-center gap-2 text-sm hover:opacity-90 transition-opacity">
+        <a href="#my-records" class="bg-tertiary text-white px-6 py-2.5 rounded-xl font-semibold shadow-lg shadow-tertiary/20 flex items-center gap-2 text-sm hover:opacity-90 transition-opacity">
           View My Records <span class="material-symbols-outlined text-sm">arrow_forward</span>
-        </button>
-        <button class="bg-surface-container-lowest text-tertiary px-6 py-2.5 rounded-xl font-semibold text-sm flex items-center gap-2 border border-tertiary/10 hover:bg-surface-container transition-colors">
-          Check Messages
-        </button>
+        </a>
       </div>
     </div>
     <div class="hidden md:block mt-6 md:mt-0">
@@ -107,138 +97,92 @@ tailwind.config={theme:{extend:{colors:{
     </div>
   </section>
 
-  <!-- Bento Grid -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+  <!-- My Health Records -->
+  <div id="my-records" class="space-y-5">
+    <div class="flex justify-between items-center">
+      <h3 class="text-xl font-bold text-on-surface">My Health Records</h3>
+      <span class="text-xs font-bold text-secondary bg-surface-container px-3 py-1 rounded-lg">{{ records | length }} record{{ 's' if records | length != 1 else '' }}</span>
+    </div>
 
-    <!-- Left Column -->
-    <div class="lg:col-span-8 space-y-5">
-      <!-- Health Summary -->
-      <div class="bg-surface-container-lowest rounded-3xl p-6 tonal-shadow border border-outline-variant/10">
-        <div class="flex justify-between items-center mb-5">
-          <h3 class="text-xl font-bold text-on-surface">My Health Summary</h3>
-          <button class="text-primary text-sm font-semibold flex items-center gap-1 hover:underline underline-offset-4">Detailed View <span class="material-symbols-outlined text-xs">open_in_new</span></button>
-        </div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="bg-surface-container-low p-4 rounded-2xl flex flex-col items-center text-center">
-            <span class="material-symbols-outlined text-tertiary mb-2 text-2xl" style="font-variation-settings:'FILL' 1;">favorite</span>
-            <span class="text-xs font-bold uppercase tracking-widest text-secondary mb-1">Heart Rate</span>
-            <span class="text-2xl font-bold text-on-surface">72 <span class="text-xs font-normal">bpm</span></span>
-            <span class="mt-2 text-[10px] px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full">Stable</span>
-          </div>
-          <div class="bg-surface-container-low p-4 rounded-2xl flex flex-col items-center text-center">
-            <span class="material-symbols-outlined text-primary mb-2 text-2xl">speed</span>
-            <span class="text-xs font-bold uppercase tracking-widest text-secondary mb-1">Blood Pressure</span>
-            <span class="text-2xl font-bold text-on-surface">120/80</span>
-            <span class="mt-2 text-[10px] px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full">Optimal</span>
-          </div>
-          <div class="bg-surface-container-low p-4 rounded-2xl flex flex-col items-center text-center">
-            <span class="material-symbols-outlined text-orange-500 mb-2 text-2xl">bloodtype</span>
-            <span class="text-xs font-bold uppercase tracking-widest text-secondary mb-1">Blood Sugar</span>
-            <span class="text-2xl font-bold text-on-surface">94 <span class="text-xs font-normal">mg/dL</span></span>
-            <span class="mt-2 text-[10px] px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full">Stable</span>
-          </div>
-          <div class="bg-surface-container-low p-4 rounded-2xl flex flex-col items-center text-center">
-            <span class="material-symbols-outlined text-blue-500 mb-2 text-2xl">monitor_weight</span>
-            <span class="text-xs font-bold uppercase tracking-widest text-secondary mb-1">BMI</span>
-            <span class="text-2xl font-bold text-on-surface">22.4</span>
-            <span class="mt-2 text-[10px] px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full">Healthy</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Appointment + Immunizations -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div class="bg-surface-container-lowest rounded-3xl p-6 tonal-shadow border border-outline-variant/10">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="font-bold text-lg">Next Appointment</h3>
-            <span class="material-symbols-outlined text-primary">calendar_today</span>
-          </div>
-          <div class="flex items-start gap-4 mb-5">
-            <div class="bg-primary-fixed p-3 rounded-2xl text-center min-w-[56px]">
-              <span class="block text-xs font-bold text-primary uppercase">Oct</span>
-              <span class="block text-2xl font-black text-primary">24</span>
+    {% if records %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {% for record in records %}
+      <a href="{{ url_for('records_bp.view_record', record_id=record.id) }}" class="block bg-surface-container-lowest rounded-3xl p-6 tonal-shadow border border-outline-variant/10 hover:shadow-md transition-all group">
+        <div class="flex justify-between items-start mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-primary-fixed flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary text-base" style="font-variation-settings:'FILL' 1;">description</span>
             </div>
             <div>
-              <h4 class="font-bold text-on-surface">Annual Physical Exam</h4>
-              <p class="text-sm text-secondary">Dr. Amara Diallo</p>
-              <p class="text-xs text-secondary mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-xs">location_on</span> Main Building, Room 402</p>
+              <h4 class="font-bold text-on-surface">Record #{{ record.id }}</h4>
+              <p class="text-[10px] text-secondary">{{ record.created_at[:10] if record.created_at else 'N/A' }}</p>
             </div>
           </div>
-          <div class="flex gap-2">
-            <button class="flex-1 py-2 text-xs font-bold border border-outline-variant rounded-xl hover:bg-surface-container transition-colors">Reschedule</button>
-            <button class="flex-1 py-2 text-xs font-bold bg-primary text-white rounded-xl hover:bg-primary-container transition-colors">Check-In</button>
-          </div>
+          <span class="material-symbols-outlined text-secondary group-hover:text-primary transition-colors">chevron_right</span>
         </div>
-        <div class="bg-surface-container-lowest rounded-3xl p-6 tonal-shadow border border-outline-variant/10">
-          <h3 class="font-bold text-lg mb-4">Immunization Records</h3>
-          <div class="space-y-4">
-            <div class="flex items-center justify-between group cursor-pointer">
-              <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-tertiary/10 flex items-center justify-center"><span class="material-symbols-outlined text-tertiary text-sm" style="font-variation-settings:'wght' 700;">done</span></div>
-                <div><p class="text-sm font-bold">Influenza (Flu Shot)</p><p class="text-[10px] text-secondary">Sept 12, 2023</p></div>
-              </div>
-              <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-sm">download</span>
-            </div>
-            <div class="flex items-center justify-between group cursor-pointer">
-              <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-tertiary/10 flex items-center justify-center"><span class="material-symbols-outlined text-tertiary text-sm" style="font-variation-settings:'wght' 700;">done</span></div>
-                <div><p class="text-sm font-bold">Tdap Vaccine</p><p class="text-[10px] text-secondary">Jan 5, 2022</p></div>
-              </div>
-              <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-sm">download</span>
-            </div>
-            <div class="flex items-center justify-between group cursor-pointer">
-              <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-tertiary/10 flex items-center justify-center"><span class="material-symbols-outlined text-tertiary text-sm" style="font-variation-settings:'wght' 700;">done</span></div>
-                <div><p class="text-sm font-bold">COVID-19 Booster</p><p class="text-[10px] text-secondary">Nov 18, 2023</p></div>
-              </div>
-              <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-sm">download</span>
-            </div>
-          </div>
-          <button class="w-full mt-4 py-2 text-xs font-bold text-primary hover:underline">View All Immunizations</button>
-        </div>
-      </div>
-    </div>
 
-    <!-- Messaging Sidebar -->
-    <div class="lg:col-span-4">
-      <div class="bg-surface-container-lowest rounded-3xl tonal-shadow border border-outline-variant/10 h-full flex flex-col overflow-hidden">
-        <div class="p-5 border-b border-surface-container-low flex justify-between items-center">
-          <div>
-            <h3 class="font-bold text-lg">Care Team Messages</h3>
-            <p class="text-xs text-secondary">Typically replies in &lt; 4 hours</p>
+        <div class="space-y-3">
+          <!-- Diagnosis -->
+          <div class="flex items-start gap-2">
+            <span class="text-xs font-bold uppercase tracking-widest text-secondary w-24 flex-shrink-0 pt-0.5">Diagnosis</span>
+            {% if record.diagnosis == '[HIDDEN]' %}
+              <span class="flex items-center gap-1 text-xs text-secondary/70 italic">
+                <span class="material-symbols-outlined text-sm">lock</span> Access restricted
+              </span>
+            {% else %}
+              <span class="text-sm text-on-surface">{{ record.diagnosis | truncate(50) if record.diagnosis else 'N/A' }}</span>
+            {% endif %}
           </div>
-          <button class="bg-primary-fixed p-2 rounded-full text-primary hover:bg-primary-fixed/60 transition-colors">
-            <span class="material-symbols-outlined text-sm">edit_square</span>
-          </button>
+
+          <!-- Treatment -->
+          <div class="flex items-start gap-2">
+            <span class="text-xs font-bold uppercase tracking-widest text-secondary w-24 flex-shrink-0 pt-0.5">Treatment</span>
+            {% if record.treatment == '[HIDDEN]' %}
+              <span class="flex items-center gap-1 text-xs text-secondary/70 italic">
+                <span class="material-symbols-outlined text-sm">lock</span> Access restricted
+              </span>
+            {% else %}
+              <span class="text-sm text-on-surface">{{ record.treatment | truncate(50) if record.treatment else 'N/A' }}</span>
+            {% endif %}
+          </div>
+
+          <!-- Lab Results -->
+          <div class="flex items-start gap-2">
+            <span class="text-xs font-bold uppercase tracking-widest text-secondary w-24 flex-shrink-0 pt-0.5">Labs</span>
+            {% if record.lab_results == '[HIDDEN]' %}
+              <span class="flex items-center gap-1 text-xs text-secondary/70 italic">
+                <span class="material-symbols-outlined text-sm">lock</span> Access restricted
+              </span>
+            {% else %}
+              <span class="text-sm text-on-surface">{{ record.lab_results | truncate(50) if record.lab_results else 'N/A' }}</span>
+            {% endif %}
+          </div>
+
+          <!-- Notes -->
+          {% if record.notes and record.notes != '[HIDDEN]' %}
+          <div class="flex items-start gap-2">
+            <span class="text-xs font-bold uppercase tracking-widest text-secondary w-24 flex-shrink-0 pt-0.5">Notes</span>
+            <span class="text-sm text-on-surface">{{ record.notes | truncate(50) }}</span>
+          </div>
+          {% elif record.notes == '[HIDDEN]' %}
+          <div class="flex items-start gap-2">
+            <span class="text-xs font-bold uppercase tracking-widest text-secondary w-24 flex-shrink-0 pt-0.5">Notes</span>
+            <span class="flex items-center gap-1 text-xs text-secondary/70 italic">
+              <span class="material-symbols-outlined text-sm">lock</span> Access restricted
+            </span>
+          </div>
+          {% endif %}
         </div>
-        <div class="flex-1 overflow-y-auto p-4 space-y-4 max-h-80">
-          <div class="flex gap-3">
-            <div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-xs font-bold text-primary flex-shrink-0">AD</div>
-            <div class="bg-surface-container-low p-3 rounded-2xl rounded-tl-none max-w-[85%]">
-              <p class="text-xs font-bold text-primary mb-1">Dr. Amara Diallo</p>
-              <p class="text-xs text-on-surface leading-relaxed">Hi Sarah, your recent cholesterol results came back within the normal range. Keep up the great habits!</p>
-              <p class="text-[10px] text-secondary mt-2 text-right">Yesterday, 4:32 PM</p>
-            </div>
-          </div>
-          <div class="flex gap-3 flex-row-reverse">
-            <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">SM</div>
-            <div class="bg-primary text-white p-3 rounded-2xl rounded-tr-none max-w-[85%]">
-              <p class="text-xs leading-relaxed">That's great news! Thank you, Dr. Diallo. See you on the 24th.</p>
-              <p class="text-[10px] text-white/70 mt-2">Today, 9:15 AM</p>
-            </div>
-          </div>
-        </div>
-        <div class="p-4 bg-surface-container-low/50">
-          <div class="bg-surface-container-lowest rounded-2xl p-2 border border-outline-variant/20 flex items-center gap-2">
-            <input type="text" placeholder="Type a message..." class="bg-transparent border-none focus:ring-0 text-xs flex-1 px-2 outline-none"/>
-            <button class="bg-primary text-white p-2 rounded-xl hover:bg-primary-container transition-colors">
-              <span class="material-symbols-outlined text-sm">send</span>
-            </button>
-          </div>
-          <p class="text-[10px] text-secondary text-center mt-2 px-2">For emergencies, please call 911 or visit the nearest ER.</p>
-        </div>
-      </div>
+      </a>
+      {% endfor %}
     </div>
+    {% else %}
+    <div class="bg-surface-container-lowest rounded-3xl p-12 tonal-shadow border border-outline-variant/10 text-center">
+      <span class="material-symbols-outlined text-5xl text-secondary/30 mb-3 block">folder_off</span>
+      <h4 class="text-lg font-bold text-secondary mb-2">No records yet</h4>
+      <p class="text-sm text-secondary/70 max-w-md mx-auto">Your health records will appear here once your care team creates them. Check back later.</p>
+    </div>
+    {% endif %}
   </div>
 
   <!-- Quick Resources -->
@@ -272,9 +216,8 @@ tailwind.config={theme:{extend:{colors:{
 <script src="{{ url_for('static', filename='js/vitalis.js') }}" defer></script>
 <!-- Mobile Bottom Nav -->
 <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-lowest flex justify-around items-center py-3 px-4 z-50 border-t border-surface-container">
-  <a href="#" class="flex flex-col items-center gap-1 text-primary"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">dashboard</span><span class="text-[10px] font-bold">Home</span></a>
-  <a href="#" class="flex flex-col items-center gap-1 text-secondary"><span class="material-symbols-outlined">calendar_month</span><span class="text-[10px] font-medium">Visits</span></a>
-  <a href="#" class="flex flex-col items-center gap-1 text-secondary"><span class="material-symbols-outlined">chat_bubble</span><span class="text-[10px] font-medium">Care</span></a>
+  <a href="{{ url_for('dashboard_bp.patient_dashboard') }}" class="flex flex-col items-center gap-1 text-primary"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">dashboard</span><span class="text-[10px] font-bold">Home</span></a>
+  <a href="#" class="flex flex-col items-center gap-1 text-secondary"><span class="material-symbols-outlined">medical_information</span><span class="text-[10px] font-medium">Records</span></a>
   <a href="#" class="flex flex-col items-center gap-1 text-secondary"><span class="material-symbols-outlined">account_circle</span><span class="text-[10px] font-medium">Profile</span></a>
 </nav>
 </body>

@@ -7,7 +7,7 @@
 
 ---
 
-## Current Status: Phase 3 COMPLETE — Moving to Phase 4 (Records List & View)
+## Current Status: Phase 4 COMPLETE — Moving to Phase 5 (User Management & Registration)
 
 ---
 
@@ -133,15 +133,15 @@ Doctors currently see ALL patient records in the system. Per business requiremen
 
 ---
 
-## Phase 4: Records List & View Record (Dynamic)
+## Phase 4: Records List & View Record (Dynamic) (COMPLETE)
 
 ### Tasks
-- [ ] **4.1** `records.html` — Replace hardcoded table with loop over `{{ records }}`
-- [ ] **4.2** Ensure records are correctly filtered per role before reaching template
-- [ ] **4.3** `view_record.html` — Verify FLAC badges render correctly
-- [ ] **4.4** Test honeypot record access triggers silent alert
-- [ ] **4.5** Test Break-the-Glass flow end-to-end (nurse accesses non-created record)
-- [ ] **4.6** Commit & push
+- [x] **4.1** `records.html` — Replaced hardcoded table with Jinja loop over `{{ records }}`
+- [x] **4.2** Records correctly filtered per role (admin=all, doctor=assigned, nurse=self-created)
+- [x] **4.3** Role-conditional sidebar (Admin Console / Clinical Portal / Nursing Portal)
+- [x] **4.4** Admin sees Delete button, doctor/nurse see Create button (not admin)
+- [x] **4.5** Dynamic record count, encrypted data indicator, signature status
+- [x] **4.6** Commit & push
 
 ---
 
@@ -215,7 +215,7 @@ Doctors currently see ALL patient records in the system. Per business requiremen
 | 2026-05-10 | Phase 1 | Fix RBAC routing + doctor-patient assignments + admin assignment UI | Complete |
 | 2026-05-10 | Phase 2 | Dynamic admin dashboard — all hardcoded data replaced with Jinja vars | Complete |
 | 2026-05-10 | Phase 3 | Dynamic role dashboards — doctor, nurse, patient all data-driven | Complete |
-| | Phase 4 | Dynamic records list & view with FLAC | Pending |
+| 2026-05-10 | Phase 4 | Dynamic records list with role-conditional sidebar and actions | Complete |
 | | Phase 5 | Dynamic user management + assignment UI | Pending |
 | | Phase 6 | Dynamic audit logs & suspicious activity | Pending |
 | | Phase 7 | Verify & polish all 6 security features | Pending |

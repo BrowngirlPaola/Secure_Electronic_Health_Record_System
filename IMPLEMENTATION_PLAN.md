@@ -7,7 +7,7 @@
 
 ---
 
-## Current Status: Phase 1 COMPLETE — Moving to Phase 2 (Dynamic Admin Dashboard)
+## Current Status: Phase 2 COMPLETE — Moving to Phase 3 (Dynamic Role Dashboards)
 
 ---
 
@@ -70,9 +70,9 @@ Doctors currently see ALL patient records in the system. Per business requiremen
 - [x] **1D.7** Test: Sidebar shows Assignments link for admin role
 
 **1E — Commit**
-- [ ] **1E.1** Commit all Phase 1 changes with descriptive message
-- [ ] **1E.2** Push to GitHub
-- [ ] **1E.3** Update this plan — mark Phase 1 complete
+- [x] **1E.1** Commit all Phase 1 changes with descriptive message (46 files, 11,055 lines)
+- [x] **1E.2** Push to GitHub (f519219..157211c)
+- [x] **1E.3** Update this plan — mark Phase 1 complete
 
 ### Acceptance Criteria
 - Admin: Dashboard, Users, Register, Records (view all/delete only — NO create), Assignments, Audit Logs, Integrity, Suspicious, BTG Review, Encryption Proof
@@ -101,22 +101,22 @@ Doctors currently see ALL patient records in the system. Per business requiremen
 
 ---
 
-## Phase 2: Dynamic Admin Dashboard (Data-Driven)
+## Phase 2: Dynamic Admin Dashboard (Data-Driven) (COMPLETE)
 
 ### Problem
 `admin_dashboard.html` currently has hardcoded static data (24 users, 187 records, etc.) instead of using the Jinja variables already passed by the route (`total_users`, `role_counts`, `locked_accounts`, `recent_logs`, `honeypot_alerts`, `btg_stats`, `chain_status`).
 
 ### Tasks
-- [ ] **2.1** Replace all hardcoded stats with `{{ total_users }}`, `{{ role_counts.doctor }}`, etc.
-- [ ] **2.2** Replace hardcoded locked accounts section with loop over `{{ locked_accounts }}`
-- [ ] **2.3** Replace hardcoded security events table with loop over `{{ recent_logs }}`
-- [ ] **2.4** Add honeypot alerts panel using `{{ honeypot_alerts }}`
-- [ ] **2.5** Add hash chain status indicator using `{{ chain_status }}`
-- [ ] **2.6** Add BTG pending count from `{{ btg_stats }}`
-- [ ] **2.7** Add doctor-patient assignment stats
-- [ ] **2.8** Update Security Status sidebar with real feature status
-- [ ] **2.9** Test with real data — verify all stats update correctly
-- [ ] **2.10** Commit & push
+- [x] **2.1** Replace all hardcoded stats with `{{ total_users }}`, `{{ role_counts.doctor }}`, etc.
+- [x] **2.2** Replace hardcoded locked accounts section with loop over `{{ locked_accounts }}` + unlock form
+- [x] **2.3** Replace hardcoded security events table with loop over `{{ recent_logs }}` with severity badges
+- [x] **2.4** Add honeypot alerts panel using `{{ honeypot_alerts }}`
+- [x] **2.5** Add hash chain status indicator using `{{ chain_status }}` (INTACT/BROKEN)
+- [x] **2.6** Add BTG pending count from `{{ btg_stats }}`
+- [x] **2.7** Add doctor-patient assignment link in quick actions
+- [x] **2.8** Update Security Status sidebar to show all 6 security layers with real status
+- [x] **2.9** Test with real data — verified all hardcoded values removed, dynamic data renders
+- [x] **2.10** Commit & push
 
 ---
 
@@ -213,7 +213,7 @@ Doctors currently see ALL patient records in the system. Per business requiremen
 |------|-------|----------------|--------|
 | 2026-05-09 | Setup | Initial backend modules, schema, seed, 21 templates | Done (uncommitted) |
 | 2026-05-10 | Phase 1 | Fix RBAC routing + doctor-patient assignments + admin assignment UI | Complete |
-| | Phase 2 | Dynamic admin dashboard with real data | Pending |
+| 2026-05-10 | Phase 2 | Dynamic admin dashboard — all hardcoded data replaced with Jinja vars | Complete |
 | | Phase 3 | Dynamic role dashboards (doctor, nurse, patient) | Pending |
 | | Phase 4 | Dynamic records list & view with FLAC | Pending |
 | | Phase 5 | Dynamic user management + assignment UI | Pending |

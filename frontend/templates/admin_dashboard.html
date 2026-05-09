@@ -54,10 +54,10 @@ tailwind.config = {
     <button class="p-2 rounded-full hover:bg-slate-200/50 transition-colors"><span class="material-symbols-outlined text-on-surface-variant">settings</span></button>
     <div class="h-6 w-px bg-outline-variant/30 mx-1"></div>
     <div class="flex items-center gap-2">
-      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white text-xs font-bold">AD</div>
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white text-xs font-bold">{{ user.full_name[:2] | upper }}</div>
       <div class="hidden md:block text-right">
-        <p class="text-xs font-bold text-on-surface">Administrator</p>
-        <p class="text-[10px] text-secondary">System Admin</p>
+        <p class="text-xs font-bold text-on-surface">{{ user.full_name }}</p>
+        <p class="text-[10px] text-secondary">{{ user.role | capitalize }}</p>
       </div>
     </div>
   </div>
@@ -117,9 +117,9 @@ tailwind.config = {
         <div class="w-10 h-10 bg-primary-fixed rounded-xl flex items-center justify-center">
           <span class="material-symbols-outlined text-primary text-base" style="font-variation-settings:'FILL' 1;">group</span>
         </div>
-        <span class="text-[10px] font-bold text-primary bg-primary-fixed px-2 py-0.5 rounded-full">+2 this week</span>
+        <span class="text-[10px] font-bold text-primary bg-primary-fixed px-2 py-0.5 rounded-full">5 roles</span>
       </div>
-      <p class="text-3xl font-black text-on-surface">24</p>
+      <p class="text-3xl font-black text-on-surface">{{ total_users }}</p>
       <p class="text-xs text-secondary mt-1 font-medium">Total Users</p>
     </div>
     <div class="bg-surface-container-lowest rounded-2xl p-6 tonal-shadow">
@@ -129,17 +129,17 @@ tailwind.config = {
         </div>
         <span class="text-[10px] font-bold text-on-tertiary-fixed-variant bg-tertiary-fixed px-2 py-0.5 rounded-full">AES-256</span>
       </div>
-      <p class="text-3xl font-black text-on-surface">187</p>
-      <p class="text-xs text-secondary mt-1 font-medium">Health Records</p>
+      <p class="text-3xl font-black text-on-surface">{{ role_counts.patient | default(0) }}</p>
+      <p class="text-xs text-secondary mt-1 font-medium">Patients</p>
     </div>
     <div class="bg-surface-container-lowest rounded-2xl p-6 tonal-shadow">
       <div class="flex items-center justify-between mb-4">
         <div class="w-10 h-10 bg-secondary-container rounded-xl flex items-center justify-center">
           <span class="material-symbols-outlined text-on-secondary-container text-base" style="font-variation-settings:'FILL' 1;">policy</span>
         </div>
-        <span class="text-[10px] font-bold text-on-secondary-container bg-secondary-container px-2 py-0.5 rounded-full">All actions</span>
+        <span class="text-[10px] font-bold text-on-secondary-container bg-secondary-container px-2 py-0.5 rounded-full">Hash Chain</span>
       </div>
-      <p class="text-3xl font-black text-on-surface">1,492</p>
+      <p class="text-3xl font-black text-on-surface">{{ chain_status.total | default(0) }}</p>
       <p class="text-xs text-secondary mt-1 font-medium">Audit Log Entries</p>
     </div>
     <div class="bg-surface-container-lowest rounded-2xl p-6 tonal-shadow">
@@ -147,10 +147,10 @@ tailwind.config = {
         <div class="w-10 h-10 bg-error-container rounded-xl flex items-center justify-center">
           <span class="material-symbols-outlined text-on-error-container text-base" style="font-variation-settings:'FILL' 1;">lock_person</span>
         </div>
-        <span class="text-[10px] font-bold text-on-error-container bg-error-container px-2 py-0.5 rounded-full">2 locked</span>
+        <span class="text-[10px] font-bold text-on-error-container bg-error-container px-2 py-0.5 rounded-full">{{ locked_accounts | length }} locked</span>
       </div>
-      <p class="text-3xl font-black text-error">3</p>
-      <p class="text-xs text-secondary mt-1 font-medium">Failed Logins Today</p>
+      <p class="text-3xl font-black text-error">{{ locked_accounts | length }}</p>
+      <p class="text-xs text-secondary mt-1 font-medium">Locked Accounts</p>
     </div>
   </div>
 
@@ -161,40 +161,50 @@ tailwind.config = {
     <div class="col-span-12 lg:col-span-8 bg-surface-container-low rounded-2xl p-7">
       <h3 class="text-xs font-bold text-secondary uppercase tracking-widest mb-6">User Distribution by Role</h3>
       <div class="space-y-5">
+        {% set max_count = [role_counts.admin, role_counts.doctor, role_counts.nurse, role_counts.lab_tech, role_counts.patient] | max %}
         <div>
           <div class="flex justify-between items-center mb-1.5 text-sm font-bold">
             <span class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-primary"></div> Doctors</span>
-            <span class="text-secondary font-normal">8 users</span>
+            <span class="text-secondary font-normal">{{ role_counts.doctor }} user{{ 's' if role_counts.doctor != 1 else '' }}</span>
           </div>
           <div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
-            <div class="bg-primary h-full rounded-full" style="width:33%"></div>
+            <div class="bg-primary h-full rounded-full" style="width:{{ (role_counts.doctor / max_count * 100) | int if max_count > 0 else 0 }}%"></div>
           </div>
         </div>
         <div>
           <div class="flex justify-between items-center mb-1.5 text-sm font-bold">
             <span class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-tertiary"></div> Nurses</span>
-            <span class="text-secondary font-normal">12 users</span>
+            <span class="text-secondary font-normal">{{ role_counts.nurse }} user{{ 's' if role_counts.nurse != 1 else '' }}</span>
           </div>
           <div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
-            <div class="bg-tertiary h-full rounded-full" style="width:50%"></div>
+            <div class="bg-tertiary h-full rounded-full" style="width:{{ (role_counts.nurse / max_count * 100) | int if max_count > 0 else 0 }}%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between items-center mb-1.5 text-sm font-bold">
+            <span class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div> Lab Technicians</span>
+            <span class="text-secondary font-normal">{{ role_counts.lab_tech }} user{{ 's' if role_counts.lab_tech != 1 else '' }}</span>
+          </div>
+          <div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+            <div class="bg-amber-500 h-full rounded-full" style="width:{{ (role_counts.lab_tech / max_count * 100) | int if max_count > 0 else 0 }}%"></div>
           </div>
         </div>
         <div>
           <div class="flex justify-between items-center mb-1.5 text-sm font-bold">
             <span class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-secondary"></div> Patients</span>
-            <span class="text-secondary font-normal">3 users</span>
+            <span class="text-secondary font-normal">{{ role_counts.patient }} user{{ 's' if role_counts.patient != 1 else '' }}</span>
           </div>
           <div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
-            <div class="bg-secondary h-full rounded-full" style="width:12%"></div>
+            <div class="bg-secondary h-full rounded-full" style="width:{{ (role_counts.patient / max_count * 100) | int if max_count > 0 else 0 }}%"></div>
           </div>
         </div>
         <div>
           <div class="flex justify-between items-center mb-1.5 text-sm font-bold">
             <span class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-on-surface-variant"></div> Admins</span>
-            <span class="text-secondary font-normal">1 user</span>
+            <span class="text-secondary font-normal">{{ role_counts.admin }} user{{ 's' if role_counts.admin != 1 else '' }}</span>
           </div>
           <div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
-            <div class="bg-on-surface-variant h-full rounded-full" style="width:4%"></div>
+            <div class="bg-on-surface-variant h-full rounded-full" style="width:{{ (role_counts.admin / max_count * 100) | int if max_count > 0 else 0 }}%"></div>
           </div>
         </div>
       </div>
@@ -202,29 +212,30 @@ tailwind.config = {
       <div class="mt-7 pt-6 border-t border-surface-container">
         <div class="flex items-center gap-2 mb-4">
           <span class="material-symbols-outlined text-error text-base" style="font-variation-settings:'FILL' 1;">lock_person</span>
-          <h4 class="text-xs font-bold uppercase tracking-widest text-error">Locked Accounts</h4>
+          <h4 class="text-xs font-bold uppercase tracking-widest text-error">Locked Accounts ({{ locked_accounts | length }})</h4>
         </div>
         <div class="space-y-3">
-          <div class="flex items-center justify-between bg-surface-container-lowest p-4 rounded-xl">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-full bg-error-container flex items-center justify-center text-xs font-bold text-on-error-container">JO</div>
-              <div>
-                <p class="text-sm font-bold">Dr. James Okafor</p>
-                <p class="text-[10px] text-secondary">Locked: 2025-05-06 14:32 · IP: 45.22.81.104</p>
+          {% if locked_accounts %}
+            {% for acct in locked_accounts %}
+            <div class="flex items-center justify-between bg-surface-container-lowest p-4 rounded-xl">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-error-container flex items-center justify-center text-xs font-bold text-on-error-container">{{ acct.full_name[:2] | upper }}</div>
+                <div>
+                  <p class="text-sm font-bold">{{ acct.full_name }}</p>
+                  <p class="text-[10px] text-secondary">{{ acct.email }} · {{ acct.role }} · Failed: {{ acct.failed_attempts }}</p>
+                </div>
               </div>
+              <form method="POST" action="{{ url_for('admin_bp.unlock_user', user_id=acct.id) }}">
+                <button type="submit" class="px-3 py-1.5 border border-primary text-primary text-xs font-bold rounded-lg hover:bg-primary-fixed transition-colors">Unlock</button>
+              </form>
             </div>
-            <button class="px-3 py-1.5 border border-primary text-primary text-xs font-bold rounded-lg hover:bg-primary-fixed transition-colors">Unlock</button>
-          </div>
-          <div class="flex items-center justify-between bg-surface-container-lowest p-4 rounded-xl">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-full bg-error-container flex items-center justify-center text-xs font-bold text-on-error-container">AB</div>
-              <div>
-                <p class="text-sm font-bold">Nurse A. Bello</p>
-                <p class="text-[10px] text-secondary">Locked: 2025-05-06 09:15 · IP: 10.0.0.22</p>
-              </div>
+            {% endfor %}
+          {% else %}
+            <div class="text-center py-4">
+              <span class="material-symbols-outlined text-tertiary text-2xl mb-1">check_circle</span>
+              <p class="text-xs text-secondary">No locked accounts</p>
             </div>
-            <button class="px-3 py-1.5 border border-primary text-primary text-xs font-bold rounded-lg hover:bg-primary-fixed transition-colors">Unlock</button>
-          </div>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -233,30 +244,60 @@ tailwind.config = {
     <div class="col-span-12 lg:col-span-4 space-y-5">
       <div class="bg-gradient-to-br from-primary to-primary-container rounded-2xl p-7 text-white tonal-shadow relative overflow-hidden">
         <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-        <h3 class="text-xs font-bold uppercase tracking-widest opacity-80 mb-5">Security Status</h3>
+        <h3 class="text-xs font-bold uppercase tracking-widest opacity-80 mb-5">6-Layer Security Status</h3>
         <div class="space-y-3 relative z-10">
           <div class="flex items-center justify-between">
-            <span class="text-sm">AES-256 Encryption</span>
+            <span class="text-sm">1. Hash Chain Integrity</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {% if chain_status.valid | default(true) %}bg-green-400/30{% else %}bg-red-400/30{% endif %}">
+              {% if chain_status.valid | default(true) %}INTACT{% else %}BROKEN{% endif %}
+            </span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-sm">2. Honeypot Records</span>
             <span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full">ACTIVE</span>
           </div>
           <div class="flex items-center justify-between">
-            <span class="text-sm">RBAC Enforcement</span>
+            <span class="text-sm">3. Session Fingerprinting</span>
+            <span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full">ACTIVE</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-sm">4. Field-Level Access</span>
             <span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full">ENFORCED</span>
           </div>
           <div class="flex items-center justify-between">
-            <span class="text-sm">Audit Logging</span>
-            <span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full">ACTIVE</span>
+            <span class="text-sm">5. Digital Signatures</span>
+            <span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full">RSA-2048</span>
           </div>
           <div class="flex items-center justify-between">
-            <span class="text-sm">Brute Force Guard</span>
-            <span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full">ACTIVE</span>
-          </div>
-          <div class="flex items-center justify-between">
-            <span class="text-sm">Anomaly Detection</span>
-            <span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full">ACTIVE</span>
+            <span class="text-sm">6. Break-the-Glass</span>
+            <span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full">{{ btg_stats.pending | default(0) }} PENDING</span>
           </div>
         </div>
       </div>
+
+      <!-- Honeypot Alerts -->
+      <div class="bg-surface-container-lowest rounded-2xl p-6 tonal-shadow">
+        <h3 class="text-xs font-bold uppercase tracking-widest text-error mb-4 flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">pest_control</span> Honeypot Alerts
+        </h3>
+        {% if honeypot_alerts %}
+        <div class="space-y-2">
+          {% for alert in honeypot_alerts %}
+          <div class="bg-error-container/20 border border-error/10 rounded-xl p-3">
+            <p class="text-xs font-bold text-on-error-container">{{ alert.activity_type | default('Honeypot Access') }}</p>
+            <p class="text-[10px] text-secondary mt-0.5">{{ alert.description | default('') | truncate(80) }}</p>
+            <p class="text-[10px] text-secondary mt-0.5">{{ alert.created_at[:16] if alert.created_at else '' }}</p>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-3">
+          <span class="material-symbols-outlined text-tertiary text-xl">check_circle</span>
+          <p class="text-xs text-secondary mt-1">No honeypot triggers detected</p>
+        </div>
+        {% endif %}
+      </div>
+
       <!-- Quick Actions -->
       <div class="bg-surface-container-lowest rounded-2xl p-6 tonal-shadow">
         <h3 class="text-xs font-bold uppercase tracking-widest text-secondary mb-4">Quick Actions</h3>
@@ -266,19 +307,24 @@ tailwind.config = {
             <span class="text-sm font-medium group-hover:text-primary transition-colors">Add New User</span>
             <span class="material-symbols-outlined text-outline text-sm ml-auto">chevron_right</span>
           </a>
-          <a href="{{ url_for('admin_bp.audit_logs') }}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-low transition-colors group">
-            <span class="material-symbols-outlined text-primary text-base">policy</span>
-            <span class="text-sm font-medium group-hover:text-primary transition-colors">View Audit Logs</span>
+          <a href="{{ url_for('admin_bp.assignments') }}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-low transition-colors group">
+            <span class="material-symbols-outlined text-primary text-base">assignment_ind</span>
+            <span class="text-sm font-medium group-hover:text-primary transition-colors">Manage Assignments</span>
+            <span class="material-symbols-outlined text-outline text-sm ml-auto">chevron_right</span>
+          </a>
+          <a href="{{ url_for('admin_bp.audit_integrity') }}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-low transition-colors group">
+            <span class="material-symbols-outlined text-primary text-base">verified_user</span>
+            <span class="text-sm font-medium group-hover:text-primary transition-colors">Verify Hash Chain</span>
+            <span class="material-symbols-outlined text-outline text-sm ml-auto">chevron_right</span>
+          </a>
+          <a href="{{ url_for('admin_bp.btg_review') }}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-low transition-colors group">
+            <span class="material-symbols-outlined text-error text-base">emergency</span>
+            <span class="text-sm font-medium group-hover:text-error transition-colors">BTG Review ({{ btg_stats.pending | default(0) }})</span>
             <span class="material-symbols-outlined text-outline text-sm ml-auto">chevron_right</span>
           </a>
           <a href="{{ url_for('api_bp.encryption_proof') }}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-low transition-colors group">
             <span class="material-symbols-outlined text-primary text-base">lock</span>
             <span class="text-sm font-medium group-hover:text-primary transition-colors">Encryption Proof</span>
-            <span class="material-symbols-outlined text-outline text-sm ml-auto">chevron_right</span>
-          </a>
-          <a href="{{ url_for('admin_bp.suspicious_activity') }}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-low transition-colors group">
-            <span class="material-symbols-outlined text-error text-base">warning</span>
-            <span class="text-sm font-medium group-hover:text-error transition-colors">Suspicious Activity</span>
             <span class="material-symbols-outlined text-outline text-sm ml-auto">chevron_right</span>
           </a>
         </div>
@@ -302,52 +348,46 @@ tailwind.config = {
             <th class="px-7 py-4">Timestamp</th>
             <th class="px-7 py-4">Actor</th>
             <th class="px-7 py-4">Action</th>
-            <th class="px-7 py-4">Record</th>
+            <th class="px-7 py-4">Details</th>
             <th class="px-7 py-4">IP Address</th>
-            <th class="px-7 py-4 text-right">Risk</th>
+            <th class="px-7 py-4 text-right">Severity</th>
           </tr>
         </thead>
         <tbody class="text-sm text-on-surface divide-y divide-surface-container-low">
-          <tr class="hover:bg-surface-container-low/50 transition-colors">
-            <td class="px-7 py-4 text-secondary font-normal text-xs">2025-05-06 14:32:01</td>
-            <td class="px-7 py-4"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center text-[9px] font-bold text-primary">AD</div> admin@vitalis.ehr</div></td>
-            <td class="px-7 py-4 font-medium">LOGIN</td>
-            <td class="px-7 py-4 text-secondary">—</td>
-            <td class="px-7 py-4 font-mono text-xs">192.168.1.1</td>
-            <td class="px-7 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] bg-tertiary-fixed text-on-tertiary-fixed-variant font-bold">LOW</span></td>
+          {% if recent_logs %}
+          {% for log in recent_logs %}
+          <tr class="{% if log.severity == 'critical' %}bg-error-container/10 hover:bg-error-container/20{% elif log.severity == 'warning' %}bg-amber-50 hover:bg-amber-100/50{% else %}hover:bg-surface-container-low/50{% endif %} transition-colors">
+            <td class="px-7 py-4 text-secondary font-normal text-xs">{{ log.created_at[:19] if log.created_at else '' }}</td>
+            <td class="px-7 py-4">
+              <div class="flex items-center gap-2">
+                {% if log.users %}
+                <div class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center text-[9px] font-bold text-primary">{{ log.users.full_name[:2] | upper if log.users.full_name else '?' }}</div>
+                <span class="text-xs">{{ log.users.email | default('Unknown') }}</span>
+                {% else %}
+                <div class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-[9px] font-bold text-on-surface-variant">?</div>
+                <span class="text-xs text-secondary">System</span>
+                {% endif %}
+              </div>
+            </td>
+            <td class="px-7 py-4 font-medium {% if log.severity == 'critical' %}text-error font-bold{% elif log.severity == 'warning' %}text-amber-800{% endif %}">{{ log.action }}</td>
+            <td class="px-7 py-4 text-secondary text-xs max-w-xs truncate">{{ log.details | default('') | truncate(50) }}</td>
+            <td class="px-7 py-4 font-mono text-xs {% if log.severity == 'critical' %}text-error{% endif %}">{{ log.ip_address | default('—') }}</td>
+            <td class="px-7 py-4 text-right">
+              {% if log.severity == 'critical' %}
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-error-container text-on-error-container font-bold">CRITICAL</span>
+              {% elif log.severity == 'warning' %}
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-800 font-bold">WARNING</span>
+              {% else %}
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-secondary-container text-on-secondary-container font-bold">INFO</span>
+              {% endif %}
+            </td>
           </tr>
-          <tr class="bg-surface-container-low/30 hover:bg-surface-container-low transition-colors">
-            <td class="px-7 py-4 text-secondary font-normal text-xs">2025-05-06 14:15:44</td>
-            <td class="px-7 py-4"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center text-[9px] font-bold text-primary">JN</div> jeanpaul@vitalis.ehr</div></td>
-            <td class="px-7 py-4 font-medium">RECORD_CREATE</td>
-            <td class="px-7 py-4 text-secondary">#008</td>
-            <td class="px-7 py-4 font-mono text-xs">192.168.1.22</td>
-            <td class="px-7 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] bg-secondary-container text-on-secondary-container font-bold">INFO</span></td>
+          {% endfor %}
+          {% else %}
+          <tr>
+            <td colspan="6" class="px-7 py-8 text-center text-secondary text-sm">No audit events yet. Actions will appear here as users interact with the system.</td>
           </tr>
-          <tr class="bg-error-container/10 hover:bg-error-container/20 transition-colors">
-            <td class="px-7 py-4 text-secondary font-normal text-xs">2025-05-06 13:55:02</td>
-            <td class="px-7 py-4"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-error-container flex items-center justify-center text-[9px] font-bold text-on-error-container">?</div> UNKNOWN</div></td>
-            <td class="px-7 py-4 text-error font-bold">FAILED_LOGIN ×3</td>
-            <td class="px-7 py-4 text-secondary">—</td>
-            <td class="px-7 py-4 font-mono text-xs text-error">45.22.81.104</td>
-            <td class="px-7 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] bg-error-container text-on-error-container font-bold">CRITICAL</span></td>
-          </tr>
-          <tr class="hover:bg-surface-container-low/50 transition-colors">
-            <td class="px-7 py-4 text-secondary font-normal text-xs">2025-05-06 11:45:33</td>
-            <td class="px-7 py-4"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center text-[9px] font-bold text-primary">AD</div> amara@vitalis.ehr</div></td>
-            <td class="px-7 py-4 font-medium">RECORD_CREATE</td>
-            <td class="px-7 py-4 text-secondary">#007</td>
-            <td class="px-7 py-4 font-mono text-xs">192.168.1.15</td>
-            <td class="px-7 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] bg-secondary-container text-on-secondary-container font-bold">INFO</span></td>
-          </tr>
-          <tr class="bg-amber-50 hover:bg-amber-100/50 transition-colors">
-            <td class="px-7 py-4 text-secondary font-normal text-xs">2025-05-06 09:18:44</td>
-            <td class="px-7 py-4"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-amber-600 text-sm">warning</span> UNAUTHORIZED</div></td>
-            <td class="px-7 py-4 font-bold text-amber-800">UNAUTHORIZED_ACCESS</td>
-            <td class="px-7 py-4 text-secondary">—</td>
-            <td class="px-7 py-4 font-mono text-xs">172.16.0.1</td>
-            <td class="px-7 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-800 font-bold">⚠️ SUSPICIOUS</span></td>
-          </tr>
+          {% endif %}
         </tbody>
       </table>
     </div>

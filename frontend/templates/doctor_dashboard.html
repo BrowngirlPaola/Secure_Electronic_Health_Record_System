@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clinical Dashboard | Vitalis EHR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{
+  "primary":"#00488d","primary-container":"#005fb8","on-primary":"#ffffff","on-primary-container":"#cadcff",
+  "primary-fixed":"#d6e3ff","on-primary-fixed":"#001b3d","on-primary-fixed-variant":"#00468b",
+  "secondary":"#53606f","secondary-container":"#d6e4f7","on-secondary-container":"#586676",
+  "tertiary":"#00524f","tertiary-container":"#006c69","on-tertiary":"#ffffff",
+  "tertiary-fixed":"#92f3ed","on-tertiary-fixed":"#00201f","on-tertiary-fixed-variant":"#00504d",
+  "error":"#ba1a1a","error-container":"#ffdad6","on-error":"#ffffff","on-error-container":"#93000a",
+  "surface":"#f8f9fa","surface-container-lowest":"#ffffff","surface-container-low":"#f3f4f5",
+  "surface-container":"#edeeef","surface-container-high":"#e7e8e9","surface-container-highest":"#e1e3e4",
+  "on-surface":"#191c1d","on-surface-variant":"#424752","outline":"#727783","outline-variant":"#c2c6d4",
+},borderRadius:{"xl":"0.5rem","full":"0.75rem"},fontFamily:{"sans":["Inter","sans-serif"]}}}}
+</script>
+<style>
+  body{font-family:'Inter',sans-serif;}
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
+  .glass-panel{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);background:rgba(248,249,250,0.85);}
+  .tonal-shadow{box-shadow:0 12px 40px rgba(0,72,141,0.06);}
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/vitalis.css') }}"/>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- TopAppBar -->
+<header class="fixed top-0 z-50 w-full glass-panel shadow-sm shadow-blue-900/5 flex justify-between items-center px-6 py-3">
+  <div class="flex items-center gap-4 pl-64">
+    <div class="relative hidden md:block">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+      <input type="text" placeholder="Search patients, records, labs..." class="bg-surface-container-high border-none rounded-full py-2 pl-9 pr-4 w-72 text-sm focus:ring-2 focus:ring-primary/20 outline-none placeholder:text-secondary"/>
+    </div>
+  </div>
+  <div class="flex items-center gap-3">
+    <button class="p-2 rounded-full hover:bg-slate-200/50"><span class="material-symbols-outlined text-on-surface-variant">notifications</span></button>
+    <button class="p-2 rounded-full hover:bg-slate-200/50"><span class="material-symbols-outlined text-on-surface-variant">help_outline</span></button>
+    <div class="h-6 w-px bg-outline-variant/30 mx-1"></div>
+    <div class="flex items-center gap-2">
+      <div class="text-right hidden md:block">
+        <p class="text-xs font-bold text-on-surface">Dr. Amara Diallo</p>
+        <p class="text-[10px] text-secondary">Attending Physician</p>
+      </div>
+      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white text-xs font-bold">AD</div>
+    </div>
+  </div>
+</header>
+
+<!-- Sidebar -->
+<aside class="fixed left-0 top-0 h-full w-64 flex flex-col bg-slate-50 border-r border-slate-200/50 z-40 pt-20">
+  <div class="px-6 mb-6">
+    <div class="flex items-center gap-3 mb-5">
+      <div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-white">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">stethoscope</span>
+      </div>
+      <div>
+        <h2 class="text-sm font-black text-blue-900">Vitalis EHR</h2>
+        <p class="text-[10px] uppercase tracking-widest text-secondary font-bold">Clinical Portal</p>
+      </div>
+    </div>
+    <a href="{{ url_for('records_bp.new_record') }}" class="w-full py-2.5 bg-gradient-to-r from-primary to-primary-container text-white rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+      <span class="material-symbols-outlined text-sm">add</span> New Record
+    </a>
+  </div>
+  <nav class="flex-1 px-3 space-y-0.5">
+    <a href="{{ url_for('dashboard_bp.doctor_dashboard') }}" class="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 border-r-4 border-blue-600 text-sm font-medium translate-x-1 rounded-l-lg"><span class="material-symbols-outlined text-sm">dashboard</span> Dashboard</a>
+    <a href="{{ url_for('records_bp.list_records') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">folder_shared</span> Patient Records</a>
+    <a href="{{ url_for('records_bp.new_record') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">note_add</span> Create Record</a>
+    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">biotech</span> Lab Results</a>
+    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">medication</span> Prescriptions</a>
+    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">analytics</span> Analytics</a>
+  </nav>
+  <div class="px-3 py-4 border-t border-slate-100 space-y-0.5">
+    <a href="{{ url_for('auth_bp.logout') }}" class="flex items-center gap-3 px-4 py-2 text-error hover:bg-error/5 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">logout</span> Logout</a>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main id="main-content" class="ml-64 pt-20 px-8 pb-12 min-h-screen">
+
+  <!-- Hero Welcome -->
+  <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <div class="lg:col-span-2 relative overflow-hidden rounded-3xl p-8 text-white min-h-[220px] flex flex-col justify-end bg-gradient-to-br from-primary via-primary-container to-tertiary">
+      <div class="absolute inset-0 opacity-10 bg-gradient-to-tr from-white/20 to-transparent pointer-events-none"></div>
+      <div class="relative z-10">
+        <p class="text-sm font-bold uppercase tracking-widest opacity-70 mb-1">Clinical Overview</p>
+        <h2 class="text-3xl font-black tracking-tight mb-2">Good morning, Dr. Diallo.</h2>
+        <p class="text-white/80 max-w-md">12 active patients under your care. 3 lab results require immediate review. Next: Rounds — Ward 4B.</p>
+        <div class="mt-4 flex gap-3">
+          <a href="{{ url_for('records_bp.list_records') }}" class="bg-white/20 backdrop-blur text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:bg-white/30 transition-colors">
+            <span class="material-symbols-outlined text-sm">folder_shared</span> View Records
+          </a>
+          <a href="{{ url_for('records_bp.new_record') }}" class="bg-white text-primary px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition-opacity">
+            <span class="material-symbols-outlined text-sm">add</span> New Record
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="bg-tertiary text-on-tertiary p-7 rounded-3xl flex flex-col justify-between">
+      <div>
+        <p class="text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1">Clinical Efficiency</p>
+        <h3 class="text-xl font-bold tracking-tight mb-4">Patient Throughput</h3>
+      </div>
+      <div class="space-y-3">
+        <div class="flex justify-between items-end">
+          <span class="text-4xl font-black">94%</span>
+          <span class="text-xs opacity-70 mb-1">+2.4% vs last week</span>
+        </div>
+        <div class="w-full h-2 bg-on-tertiary/20 rounded-full overflow-hidden">
+          <div class="h-full bg-tertiary-fixed rounded-full" style="width:94%"></div>
+        </div>
+        <p class="text-xs opacity-60 italic">Optimized workflow in post-op charting.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bento Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-7">
+
+    <!-- Patient Roster -->
+    <section class="lg:col-span-8 space-y-5">
+      <div class="flex justify-between items-center">
+        <div>
+          <h3 class="text-lg font-bold text-on-surface">My Patient Roster</h3>
+          <p class="text-xs text-secondary">12 active patients under your care</p>
+        </div>
+        <a href="{{ url_for('records_bp.list_records') }}" class="text-xs font-bold text-primary hover:underline uppercase tracking-wider">View All Records</a>
+      </div>
+      <div class="bg-surface-container-low rounded-3xl overflow-hidden tonal-shadow">
+        <table class="w-full text-left">
+          <thead class="bg-surface-container text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+            <tr>
+              <th class="px-6 py-4">Patient</th>
+              <th class="px-6 py-4 text-center">Room</th>
+              <th class="px-6 py-4">Status</th>
+              <th class="px-6 py-4">Vitals</th>
+              <th class="px-6 py-4"></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-surface-container-highest/20 text-sm">
+            <tr class="hover:bg-surface-container-lowest transition-colors">
+              <td class="px-6 py-4"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-secondary text-xs">EK</div><div><p class="font-bold">Elena Kostic</p><p class="text-[10px] text-secondary">ID #88293 · 42F</p></div></div></td>
+              <td class="px-6 py-4 text-center"><span class="bg-surface-container-high px-2.5 py-1 rounded-lg text-xs font-black text-on-surface-variant">412-B</span></td>
+              <td class="px-6 py-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>STABLE</span></td>
+              <td class="px-6 py-4"><div class="flex gap-4 text-[10px]"><div><p class="text-secondary uppercase">HR</p><p class="font-bold text-on-surface">72</p></div><div><p class="text-secondary uppercase">BP</p><p class="font-bold text-on-surface">118/74</p></div></div></td>
+              <td class="px-6 py-4 text-right"><button class="text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined">chevron_right</span></button></td>
+            </tr>
+            <tr class="hover:bg-surface-container-lowest transition-colors">
+              <td class="px-6 py-4"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-error-container flex items-center justify-center font-bold text-on-error-container text-xs">JM</div><div><p class="font-bold">James Miller</p><p class="text-[10px] text-secondary">ID #22930 · 68M</p></div></div></td>
+              <td class="px-6 py-4 text-center"><span class="bg-error-container/30 px-2.5 py-1 rounded-lg text-xs font-black text-error">ICU-4</span></td>
+              <td class="px-6 py-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-error-container text-on-error-container text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></span>CRITICAL</span></td>
+              <td class="px-6 py-4"><div class="flex gap-4 text-[10px] text-error"><div><p class="text-secondary uppercase">HR</p><p class="font-black">114</p></div><div><p class="text-secondary uppercase">BP</p><p class="font-black">90/60</p></div></div></td>
+              <td class="px-6 py-4 text-right"><button class="text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined">chevron_right</span></button></td>
+            </tr>
+            <tr class="hover:bg-surface-container-lowest transition-colors">
+              <td class="px-6 py-4"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-secondary-container flex items-center justify-center font-bold text-on-secondary-container text-xs">LS</div><div><p class="font-bold">Linda Su</p><p class="text-[10px] text-secondary">ID #99012 · 31F</p></div></div></td>
+              <td class="px-6 py-4 text-center"><span class="bg-surface-container-high px-2.5 py-1 rounded-lg text-xs font-black text-on-surface-variant">201-A</span></td>
+              <td class="px-6 py-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>OBSERVATION</span></td>
+              <td class="px-6 py-4"><div class="flex gap-4 text-[10px]"><div><p class="text-secondary uppercase">HR</p><p class="font-bold text-on-surface">82</p></div><div><p class="text-secondary uppercase">BP</p><p class="font-bold text-on-surface">122/80</p></div></div></td>
+              <td class="px-6 py-4 text-right"><button class="text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined">chevron_right</span></button></td>
+            </tr>
+            <tr class="hover:bg-surface-container-lowest transition-colors">
+              <td class="px-6 py-4"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-secondary text-xs">RO</div><div><p class="font-bold">Robert Osei</p><p class="text-[10px] text-secondary">ID #44201 · 55M</p></div></div></td>
+              <td class="px-6 py-4 text-center"><span class="bg-surface-container-high px-2.5 py-1 rounded-lg text-xs font-black text-on-surface-variant">308</span></td>
+              <td class="px-6 py-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>STABLE</span></td>
+              <td class="px-6 py-4"><div class="flex gap-4 text-[10px]"><div><p class="text-secondary uppercase">HR</p><p class="font-bold text-on-surface">68</p></div><div><p class="text-secondary uppercase">BP</p><p class="font-bold text-on-surface">125/82</p></div></div></td>
+              <td class="px-6 py-4 text-right"><button class="text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined">chevron_right</span></button></td>
+            </tr>
+            <tr class="hover:bg-surface-container-lowest transition-colors">
+              <td class="px-6 py-4"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-secondary text-xs">MS</div><div><p class="font-bold">Maria Santos</p><p class="text-[10px] text-secondary">ID #77654 · 29F</p></div></div></td>
+              <td class="px-6 py-4 text-center"><span class="bg-surface-container-high px-2.5 py-1 rounded-lg text-xs font-black text-on-surface-variant">105</span></td>
+              <td class="px-6 py-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant text-[10px] font-bold"><span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>STABLE</span></td>
+              <td class="px-6 py-4"><div class="flex gap-4 text-[10px]"><div><p class="text-secondary uppercase">HR</p><p class="font-bold text-on-surface">76</p></div><div><p class="text-secondary uppercase">BP</p><p class="font-bold text-on-surface">110/70</p></div></div></td>
+              <td class="px-6 py-4 text-right"><button class="text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined">chevron_right</span></button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Quick actions -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-surface-container-lowest p-6 rounded-3xl tonal-shadow hover:shadow-md transition-all flex flex-col justify-between min-h-[140px]">
+          <div>
+            <span class="material-symbols-outlined text-primary text-3xl mb-3 block" style="font-variation-settings:'FILL' 1;">history_edu</span>
+            <h4 class="font-bold text-on-surface">Sign Clinical Notes</h4>
+          </div>
+          <div class="flex justify-between items-center">
+            <p class="text-xs text-secondary">4 Pending Signature</p>
+            <span class="material-symbols-outlined text-primary">arrow_forward</span>
+          </div>
+        </div>
+        <a href="{{ url_for('records_bp.new_record') }}" class="bg-surface-container-lowest p-6 rounded-3xl tonal-shadow hover:shadow-md transition-all flex flex-col justify-between min-h-[140px]">
+          <div>
+            <span class="material-symbols-outlined text-tertiary text-3xl mb-3 block" style="font-variation-settings:'FILL' 1;">note_add</span>
+            <h4 class="font-bold text-on-surface">Create New Record</h4>
+          </div>
+          <div class="flex justify-between items-center">
+            <p class="text-xs text-secondary">AES-256 Encrypted</p>
+            <span class="material-symbols-outlined text-tertiary">arrow_forward</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Right Column -->
+    <aside class="lg:col-span-4 space-y-7">
+      <!-- Lab Results -->
+      <div class="space-y-4">
+        <div class="flex justify-between items-center px-1">
+          <h3 class="text-xs font-black uppercase tracking-widest text-secondary">Recent Lab Results</h3>
+          <button class="p-1 rounded-full hover:bg-slate-200 transition-colors"><span class="material-symbols-outlined text-sm">filter_list</span></button>
+        </div>
+        <div class="space-y-3">
+          <div class="bg-error-container/20 p-4 rounded-2xl border-l-4 border-error">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <p class="text-[10px] font-bold text-error uppercase tracking-wider mb-0.5">Critical Value Alert</p>
+                <h4 class="text-sm font-bold text-on-surface">Potassium (K+)</h4>
+              </div>
+              <span class="material-symbols-outlined text-error text-base" style="font-variation-settings:'FILL' 1;">warning</span>
+            </div>
+            <div class="flex items-baseline gap-2 mb-2">
+              <span class="text-2xl font-black text-error">6.2</span>
+              <span class="text-xs text-secondary">mEq/L</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <p class="text-[10px] text-secondary">Patient: James Miller · ICU-4</p>
+              <button class="bg-error text-white text-[10px] font-bold px-3 py-1 rounded-lg">TAKE ACTION</button>
+            </div>
+          </div>
+          <div class="bg-surface-container-lowest p-4 rounded-2xl tonal-shadow">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <p class="text-[10px] font-bold text-secondary uppercase mb-0.5">Standard Report</p>
+                <h4 class="text-sm font-bold">Complete Blood Count</h4>
+              </div>
+              <span class="material-symbols-outlined text-tertiary text-base">check_circle</span>
+            </div>
+            <p class="text-sm font-semibold text-on-surface mb-2">Normal Range</p>
+            <div class="flex justify-between items-center">
+              <p class="text-[10px] text-secondary">Patient: Elena Kostic · 412-B</p>
+              <button class="text-primary text-[10px] font-bold uppercase tracking-wider">Review</button>
+            </div>
+          </div>
+          <div class="bg-surface-container-lowest p-4 rounded-2xl tonal-shadow">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <p class="text-[10px] font-bold text-secondary uppercase mb-0.5">Elevated</p>
+                <h4 class="text-sm font-bold">Glucose Panel</h4>
+              </div>
+              <span class="material-symbols-outlined text-amber-500 text-base">pending</span>
+            </div>
+            <div class="flex items-baseline gap-2 mb-2"><span class="text-xl font-bold">142</span><span class="text-xs text-secondary">mg/dL</span></div>
+            <div class="flex justify-between items-center">
+              <p class="text-[10px] text-secondary">Patient: Linda Su · 201-A</p>
+              <button class="text-primary text-[10px] font-bold uppercase tracking-wider">Review</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today's Schedule -->
+      <div class="space-y-4">
+        <div class="flex justify-between items-center px-1">
+          <h3 class="text-xs font-black uppercase tracking-widest text-secondary">Today's Encounters</h3>
+          <span class="text-[10px] font-bold bg-primary-container text-white px-2 py-0.5 rounded">TODAY</span>
+        </div>
+        <div class="bg-surface-container-low rounded-3xl p-2 space-y-1">
+          <div class="flex gap-4 p-4 rounded-2xl bg-surface-container-lowest tonal-shadow">
+            <div class="flex flex-col items-center justify-center border-r border-slate-100 pr-4 min-w-[48px]">
+              <span class="text-xs font-black text-on-surface">09:30</span>
+              <span class="text-[10px] text-secondary font-bold uppercase">AM</span>
+            </div>
+            <div class="flex-1">
+              <h5 class="text-sm font-bold">Sarah Jenkins</h5>
+              <p class="text-[10px] text-secondary">Post-Op Follow-up · Telehealth</p>
+            </div>
+            <span class="material-symbols-outlined text-primary self-center">videocam</span>
+          </div>
+          <div class="flex gap-4 p-4 rounded-2xl hover:bg-surface-container-high transition-colors">
+            <div class="flex flex-col items-center justify-center border-r border-slate-100 pr-4 min-w-[48px]">
+              <span class="text-xs font-black text-on-surface">11:00</span>
+              <span class="text-[10px] text-secondary font-bold uppercase">AM</span>
+            </div>
+            <div class="flex-1">
+              <h5 class="text-sm font-bold">Michael Zhao</h5>
+              <p class="text-[10px] text-secondary">Initial Consultation · Room 2</p>
+            </div>
+            <span class="material-symbols-outlined text-outline self-center">meeting_room</span>
+          </div>
+          <div class="flex gap-4 p-4 rounded-2xl hover:bg-surface-container-high transition-colors">
+            <div class="flex flex-col items-center justify-center border-r border-slate-100 pr-4 min-w-[48px]">
+              <span class="text-xs font-black text-on-surface">14:45</span>
+              <span class="text-[10px] text-secondary font-bold uppercase">PM</span>
+            </div>
+            <div class="flex-1">
+              <h5 class="text-sm font-bold">Robert Frost</h5>
+              <p class="text-[10px] text-secondary">Cardiac Review · Room 5</p>
+            </div>
+            <span class="material-symbols-outlined text-outline self-center">meeting_room</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+<script src="{{ url_for('static', filename='js/vitalis.js') }}" defer></script>
+</body>
+</html>

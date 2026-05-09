@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Break the Glass | Vitalis EHR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        "primary":"#00488d","primary-container":"#005fb8","on-primary":"#ffffff",
+        "secondary":"#53606f","secondary-container":"#d6e4f7",
+        "tertiary":"#00524f",
+        "error":"#ba1a1a","error-container":"#ffdad6","on-error-container":"#93000a",
+        "surface":"#f8f9fa","surface-container-lowest":"#ffffff","surface-container-low":"#f3f4f5",
+        "surface-container-high":"#e7e8e9","surface-container-highest":"#e1e3e4",
+        "on-surface":"#191c1d","on-surface-variant":"#424752","outline":"#727783","outline-variant":"#c2c6d4",
+      },
+      fontFamily:{"sans":["Inter","sans-serif"]}
+    }
+  }
+}
+</script>
+<style>
+  body{font-family:'Inter',sans-serif;}
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
+  .glass-panel{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);background:rgba(248,249,250,0.85);}
+  .tonal-shadow{box-shadow:0 12px 40px rgba(0,72,141,0.06);}
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/vitalis.css') }}"/>
+</head>
+<body class="bg-surface text-on-surface antialiased overflow-x-hidden">
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- TopAppBar -->
+<header class="fixed top-0 z-50 w-full glass-panel shadow-sm shadow-blue-900/5 flex justify-between items-center px-6 py-3">
+  <div class="flex items-center gap-6">
+    <span class="text-lg font-black tracking-tighter text-blue-900 pl-64">Vitalis EHR</span>
+  </div>
+  <div class="flex items-center gap-2">
+    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white text-xs font-bold">{{ user.full_name[:2]|upper }}</div>
+    <p class="text-xs font-bold text-on-surface hidden md:block">{{ user.full_name }}</p>
+  </div>
+</header>
+
+<!-- Sidebar -->
+<aside class="fixed left-0 top-0 h-full w-64 flex flex-col bg-slate-50 border-r border-slate-200/50 z-40 pt-20">
+  <div class="px-6 mb-6">
+    <div class="flex items-center gap-3 mb-5">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">health_and_safety</span>
+      </div>
+      <div>
+        <h2 class="text-sm font-black text-blue-900 leading-tight">Vitalis EHR</h2>
+        <p class="text-[10px] uppercase tracking-widest text-secondary font-bold">{{ user.role|replace('_',' ')|title }}</p>
+      </div>
+    </div>
+  </div>
+  <nav class="flex-1 px-3 space-y-0.5">
+    {% if user.role == 'doctor' %}
+    <a href="{{ url_for('dashboard_bp.doctor_dashboard') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">dashboard</span> Dashboard</a>
+    <a href="{{ url_for('records_bp.list_records') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">folder_shared</span> Health Records</a>
+    {% elif user.role == 'nurse' %}
+    <a href="{{ url_for('dashboard_bp.nurse_dashboard') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">dashboard</span> Dashboard</a>
+    <a href="{{ url_for('records_bp.list_records') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">folder_shared</span> Health Records</a>
+    {% endif %}
+    <a href="{{ url_for('api_bp.encryption_proof') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">lock</span> Encryption Proof</a>
+  </nav>
+  <div class="px-3 py-4 border-t border-slate-100">
+    <a href="{{ url_for('auth_bp.logout') }}" class="flex items-center gap-3 px-4 py-2 text-error hover:bg-error/5 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">logout</span> Logout</a>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main id="main-content" class="ml-64 pt-20 px-8 pb-12 min-h-screen">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="mb-6 space-y-3">
+    {% for category, message in messages %}
+    <div class="flex items-center gap-3 p-4 rounded-xl border
+      {% if category == 'error' %}bg-red-50 border-red-200 text-red-800
+      {% else %}bg-amber-50 border-amber-200 text-amber-800{% endif %}">
+      <span class="material-symbols-outlined text-sm">{% if category == 'error' %}error{% else %}warning{% endif %}</span>
+      <span class="text-sm font-medium">{{ message }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  <!-- Header -->
+  <header class="mb-8">
+    <span class="text-[11px] font-bold text-amber-600 uppercase tracking-widest mb-1 block">Feature 6: Emergency Access Protocol</span>
+    <h1 class="text-3xl font-black tracking-tight text-on-surface">Break-the-Glass Access</h1>
+  </header>
+
+  <!-- Warning Banner -->
+  <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-8 mb-8">
+    <div class="flex items-start gap-5">
+      <div class="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-amber-600 text-3xl" style="font-variation-settings:'FILL' 1;">emergency</span>
+      </div>
+      <div>
+        <h2 class="text-xl font-black text-amber-800">Access Denied</h2>
+        <p class="text-sm text-amber-700 mt-2">You do not have standard authorization to view this record. In a <strong>medical emergency</strong>, you may override access controls by providing a written justification.</p>
+        <div class="mt-4 space-y-2">
+          <p class="text-xs font-bold text-amber-800">This action will:</p>
+          <ul class="text-xs text-amber-700 space-y-1 list-none">
+            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs text-amber-600" style="font-variation-settings:'FILL' 1;">timer</span> Grant you <strong>30-minute</strong> temporary access to this record</li>
+            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs text-red-600" style="font-variation-settings:'FILL' 1;">priority_high</span> Log this event at <strong>CRITICAL</strong> severity in the audit chain</li>
+            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs text-amber-600" style="font-variation-settings:'FILL' 1;">admin_panel_settings</span> Notify the administrator for <strong>mandatory review</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BTG Form -->
+  <form method="POST" action="{{ url_for('records_bp.break_glass', record_id=record_id) }}" class="bg-surface-container-lowest rounded-2xl p-7 tonal-shadow">
+    <h3 class="text-sm font-bold text-on-surface mb-2">Emergency Justification</h3>
+    <p class="text-xs text-secondary mb-4">Provide a clear clinical justification for why you need emergency access to this record. Minimum 10 characters required.</p>
+
+    <textarea name="justification" rows="5" required minlength="10" placeholder="Example: Patient presenting with acute myocardial infarction in ER. Need immediate access to medication history and allergies for emergency treatment decision." class="w-full bg-surface-container-high border-none border-b-2 border-transparent rounded-t-lg p-4 text-sm outline-none focus:border-b-amber-500 transition-colors resize-y"></textarea>
+
+    <div class="mt-6 flex items-center justify-between">
+      <a href="{{ url_for('records_bp.list_records') }}" class="px-5 py-2.5 bg-surface-container-high text-on-surface-variant rounded-xl text-sm font-semibold hover:bg-surface-container-highest transition-colors">
+        Cancel
+      </a>
+      <button type="submit" class="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl font-bold text-sm flex items-center gap-2 hover:opacity-90 transition-opacity shadow-lg shadow-amber-500/20">
+        <span class="material-symbols-outlined text-base">emergency</span> Break the Glass &mdash; Request Emergency Access
+      </button>
+    </div>
+  </form>
+
+  <!-- HIPAA Reference -->
+  <div class="mt-6 bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start gap-3">
+    <span class="material-symbols-outlined text-slate-500 text-sm mt-0.5">menu_book</span>
+    <div>
+      <p class="text-xs font-bold text-slate-700">HIPAA Compliance — 45 CFR 164.312(a)(2)(ii)</p>
+      <p class="text-xs text-slate-500 mt-1">HIPAA requires emergency access procedures as a compensating control. This Break-the-Glass protocol balances patient data security with healthcare availability in emergencies.</p>
+    </div>
+  </div>
+
+</main>
+<script src="{{ url_for('static', filename='js/vitalis.js') }}" defer></script>
+</body>
+</html>

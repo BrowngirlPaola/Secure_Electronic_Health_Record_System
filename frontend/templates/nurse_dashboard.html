@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ward Dashboard | Vitalis EHR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{
+  "primary":"#00488d","primary-container":"#005fb8","on-primary":"#ffffff","on-primary-container":"#cadcff",
+  "primary-fixed":"#d6e3ff","on-primary-fixed-variant":"#00468b",
+  "secondary":"#53606f","secondary-container":"#d6e4f7","on-secondary-container":"#586676",
+  "tertiary":"#00524f","tertiary-container":"#006c69","on-tertiary":"#ffffff",
+  "tertiary-fixed":"#92f3ed","on-tertiary-fixed-variant":"#00504d",
+  "error":"#ba1a1a","error-container":"#ffdad6","on-error":"#ffffff","on-error-container":"#93000a",
+  "surface":"#f8f9fa","surface-container-lowest":"#ffffff","surface-container-low":"#f3f4f5",
+  "surface-container":"#edeeef","surface-container-high":"#e7e8e9","surface-container-highest":"#e1e3e4",
+  "on-surface":"#191c1d","on-surface-variant":"#424752","outline":"#727783","outline-variant":"#c2c6d4",
+},borderRadius:{"xl":"0.5rem","full":"0.75rem"},fontFamily:{"sans":["Inter","sans-serif"]}}}}
+</script>
+<style>
+  body{font-family:'Inter',sans-serif;}
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
+  .glass-panel{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);background:rgba(248,249,250,0.85);}
+  .tonal-shadow{box-shadow:0 12px 40px rgba(0,72,141,0.06);}
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/vitalis.css') }}"/>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- TopAppBar -->
+<header class="fixed top-0 z-50 w-full glass-panel shadow-sm shadow-blue-900/5 flex justify-between items-center px-6 py-3">
+  <div class="flex items-center gap-4 pl-64">
+    <div class="hidden md:flex items-center bg-surface-container-high px-4 py-1.5 rounded-xl">
+      <span class="material-symbols-outlined text-on-surface-variant text-sm mr-2">search</span>
+      <input type="text" placeholder="Search patient or room..." class="bg-transparent border-none focus:ring-0 text-sm w-56 placeholder:text-secondary outline-none"/>
+    </div>
+  </div>
+  <div class="flex items-center gap-3">
+    <button class="p-2 rounded-full hover:bg-slate-200/50"><span class="material-symbols-outlined text-on-surface-variant">notifications</span></button>
+    <button class="p-2 rounded-full hover:bg-slate-200/50"><span class="material-symbols-outlined text-on-surface-variant">settings</span></button>
+    <div class="flex items-center gap-3 ml-2 pl-4 border-l border-outline-variant/30">
+      <div class="text-right hidden sm:block">
+        <p class="text-xs font-bold text-on-surface">Nurse J. Sterling</p>
+        <p class="text-[10px] text-secondary uppercase tracking-wider">Ward 4C — Charge</p>
+      </div>
+      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-tertiary to-tertiary-container flex items-center justify-center text-white text-xs font-bold">JS</div>
+    </div>
+  </div>
+</header>
+
+<!-- Sidebar -->
+<aside class="fixed left-0 top-0 h-full w-64 flex flex-col bg-slate-50 border-r border-slate-200/50 z-40 pt-20">
+  <div class="px-6 mb-6">
+    <div class="flex items-center gap-3 mb-5">
+      <div class="w-10 h-10 rounded-xl bg-tertiary flex items-center justify-center text-white">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">medical_services</span>
+      </div>
+      <div>
+        <h2 class="text-sm font-black text-blue-900">Vitalis EHR</h2>
+        <p class="text-[10px] uppercase tracking-widest text-secondary font-bold">Nursing Portal</p>
+      </div>
+    </div>
+    <a href="{{ url_for('records_bp.new_record') }}" class="w-full py-2.5 bg-gradient-to-r from-primary to-primary-container text-white rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+      <span class="material-symbols-outlined text-sm">add</span> New Record
+    </a>
+  </div>
+  <nav class="flex-1 px-3 space-y-0.5">
+    <a href="{{ url_for('dashboard_bp.nurse_dashboard') }}" class="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 border-r-4 border-blue-600 text-sm font-medium translate-x-1 rounded-l-lg"><span class="material-symbols-outlined text-sm">dashboard</span> Dashboard</a>
+    <a href="{{ url_for('records_bp.list_records') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">folder_shared</span> My Records</a>
+    <a href="{{ url_for('records_bp.new_record') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">note_add</span> Create Record</a>
+    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">medication</span> Medications (MAR)</a>
+    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">biotech</span> Lab Results</a>
+  </nav>
+  <div class="px-3 py-4 border-t border-slate-100 space-y-0.5">
+    <a href="{{ url_for('auth_bp.logout') }}" class="flex items-center gap-3 px-4 py-2 text-error hover:bg-error/5 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">logout</span> Logout</a>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main id="main-content" class="ml-64 pt-20 pb-24 bg-surface min-h-screen">
+  <div class="px-8 py-6">
+
+    <!-- Ward Header -->
+    <div class="flex justify-between items-end mb-7">
+      <div>
+        <span class="text-[10px] font-bold text-on-tertiary-fixed-variant bg-tertiary-fixed px-2 py-0.5 rounded uppercase tracking-widest">Active Shift</span>
+        <h1 class="text-3xl font-black text-on-surface tracking-tight mt-2">Ward 4C: Surgical Recovery</h1>
+        <p class="text-secondary text-sm mt-1">Monitoring 14 patients · 3 critical alerts pending</p>
+      </div>
+      <div class="bg-surface-container-lowest px-4 py-2 rounded-xl tonal-shadow border border-outline-variant/10">
+        <p class="text-[10px] uppercase font-bold text-secondary tracking-tighter">System Health</p>
+        <div class="flex items-center gap-2 mt-1">
+          <div class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></div>
+          <span class="text-xs font-semibold">EHR Cloud Active</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bento Grid -->
+    <div class="grid grid-cols-12 gap-6">
+
+      <!-- Patient Priority Monitor -->
+      <div class="col-span-12 lg:col-span-8 space-y-5">
+        <section class="bg-surface-container-lowest p-6 rounded-2xl tonal-shadow border border-outline-variant/5">
+          <div class="flex justify-between items-center mb-5">
+            <h3 class="font-bold text-on-surface">Patient Priority Monitor</h3>
+            <div class="flex gap-2">
+              <button class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-surface-container-high hover:bg-surface-container-highest transition-colors">By Room</button>
+              <button class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-primary-fixed text-primary">By Acuity</button>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold border-b border-surface-container-low">
+                  <th class="pb-4 px-2">Room</th>
+                  <th class="pb-4 px-2">Patient</th>
+                  <th class="pb-4 px-2">Acuity</th>
+                  <th class="pb-4 px-2">Vitals Trend</th>
+                  <th class="pb-4 px-2 text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-surface-container-low text-sm">
+                <tr class="hover:bg-surface-container-low/50 transition-colors">
+                  <td class="py-4 px-2 font-black text-primary">402-A</td>
+                  <td class="py-4 px-2"><p class="font-bold">Rodriguez, Sofia</p><p class="text-[10px] text-secondary">62Y · Post-Op Day 1</p></td>
+                  <td class="py-4 px-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-error-container text-on-error-container uppercase">Critical</span></td>
+                  <td class="py-4 px-2">
+                    <div class="flex items-end gap-0.5 h-6 w-24">
+                      <div class="w-2 bg-tertiary/20 h-[30%] rounded-sm"></div><div class="w-2 bg-tertiary/40 h-[50%] rounded-sm"></div><div class="w-2 bg-tertiary h-[80%] rounded-sm"></div><div class="w-2 bg-tertiary h-[65%] rounded-sm"></div><div class="w-2 bg-error h-[100%] rounded-sm"></div>
+                    </div>
+                  </td>
+                  <td class="py-4 px-2 text-right text-xs font-medium text-error">HR Spike (112)</td>
+                </tr>
+                <tr class="hover:bg-surface-container-low/50 transition-colors">
+                  <td class="py-4 px-2 font-black text-primary">402-B</td>
+                  <td class="py-4 px-2"><p class="font-bold">Chen, Wei</p><p class="text-[10px] text-secondary">45Y · Appendectomy</p></td>
+                  <td class="py-4 px-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant uppercase">Stable</span></td>
+                  <td class="py-4 px-2">
+                    <div class="flex items-end gap-0.5 h-6 w-24">
+                      <div class="w-2 bg-tertiary h-[65%] rounded-sm"></div><div class="w-2 bg-tertiary h-[50%] rounded-sm"></div><div class="w-2 bg-tertiary h-[65%] rounded-sm"></div><div class="w-2 bg-tertiary h-[55%] rounded-sm"></div><div class="w-2 bg-tertiary h-[65%] rounded-sm"></div>
+                    </div>
+                  </td>
+                  <td class="py-4 px-2 text-right text-xs font-medium text-secondary">WNL</td>
+                </tr>
+                <tr class="hover:bg-surface-container-low/50 transition-colors">
+                  <td class="py-4 px-2 font-black text-primary">405</td>
+                  <td class="py-4 px-2"><p class="font-bold">Miller, Thomas</p><p class="text-[10px] text-secondary">78Y · Observation</p></td>
+                  <td class="py-4 px-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-secondary-container text-on-secondary-container uppercase">Moderate</span></td>
+                  <td class="py-4 px-2">
+                    <div class="flex items-end gap-0.5 h-6 w-24">
+                      <div class="w-2 bg-tertiary/60 h-[65%] rounded-sm"></div><div class="w-2 bg-tertiary/60 h-[80%] rounded-sm"></div><div class="w-2 bg-tertiary/60 h-[65%] rounded-sm"></div><div class="w-2 bg-tertiary/60 h-[45%] rounded-sm"></div><div class="w-2 bg-tertiary/40 h-[30%] rounded-sm"></div>
+                    </div>
+                  </td>
+                  <td class="py-4 px-2 text-right text-xs font-medium text-secondary">Discharge Pending</td>
+                </tr>
+                <tr class="hover:bg-surface-container-low/50 transition-colors">
+                  <td class="py-4 px-2 font-black text-primary">408</td>
+                  <td class="py-4 px-2"><p class="font-bold">Patel, Anita</p><p class="text-[10px] text-secondary">34Y · Post-C-Section</p></td>
+                  <td class="py-4 px-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant uppercase">Stable</span></td>
+                  <td class="py-4 px-2">
+                    <div class="flex items-end gap-0.5 h-6 w-24">
+                      <div class="w-2 bg-tertiary h-[55%] rounded-sm"></div><div class="w-2 bg-tertiary h-[60%] rounded-sm"></div><div class="w-2 bg-tertiary h-[55%] rounded-sm"></div><div class="w-2 bg-tertiary h-[60%] rounded-sm"></div><div class="w-2 bg-tertiary h-[55%] rounded-sm"></div>
+                    </div>
+                  </td>
+                  <td class="py-4 px-2 text-right text-xs font-medium text-secondary">Monitoring</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Real-Time Vitals -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="bg-gradient-to-br from-tertiary to-tertiary-container p-6 rounded-2xl text-white relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-3 opacity-10"><span class="material-symbols-outlined text-6xl">favorite</span></div>
+            <div class="relative z-10">
+              <div class="flex justify-between items-start mb-3">
+                <h4 class="text-xs font-bold uppercase tracking-widest opacity-80">Room 402-A HR</h4>
+                <span class="material-symbols-outlined text-sm">trending_up</span>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <span class="text-4xl font-black tracking-tighter">112</span>
+                <span class="text-xs opacity-70">BPM</span>
+              </div>
+              <div class="mt-4 h-10 flex items-end gap-0.5">
+                <div class="flex-1 bg-white/20 h-[30%] rounded-t-sm"></div><div class="flex-1 bg-white/30 h-[45%] rounded-t-sm"></div><div class="flex-1 bg-white/50 h-[65%] rounded-t-sm"></div><div class="flex-1 bg-white/70 h-[55%] rounded-t-sm"></div><div class="flex-1 bg-white h-[100%] rounded-t-sm"></div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface-container-lowest p-6 rounded-2xl tonal-shadow border border-outline-variant/10">
+            <div class="flex justify-between items-start mb-3">
+              <h4 class="text-xs font-bold uppercase tracking-widest text-secondary">SpO2 Aggregate</h4>
+              <span class="text-[10px] font-bold text-on-tertiary-fixed-variant bg-tertiary-fixed px-2 py-0.5 rounded">Avg 96%</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-4xl font-black text-on-surface tracking-tighter">98<span class="text-xl font-normal text-secondary">%</span></span>
+            </div>
+            <div class="mt-4">
+              <div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+                <div class="bg-tertiary h-full" style="width:98%"></div>
+              </div>
+              <p class="text-[10px] mt-2 text-secondary italic">Normal range across active recovery beds</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Rail -->
+      <div class="col-span-12 lg:col-span-4 space-y-5">
+        <!-- MAR Alerts -->
+        <section class="bg-error-container/20 p-5 rounded-2xl border border-error/10">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="material-symbols-outlined text-error text-base" style="font-variation-settings:'FILL' 1;">warning</span>
+            <h3 class="text-xs font-bold text-on-error-container uppercase tracking-tight">MAR Alerts (2 Due)</h3>
+          </div>
+          <div class="space-y-3">
+            <div class="p-4 bg-white rounded-xl border-l-4 border-error">
+              <div class="flex justify-between text-[10px] font-black text-secondary uppercase mb-1">
+                <span>Room 402-A</span><span class="text-error">15m Overdue</span>
+              </div>
+              <p class="text-sm font-extrabold text-on-surface">Insulin Aspart (Novolog)</p>
+              <p class="text-xs text-secondary mb-3">12 Units, Subcutaneous</p>
+              <button class="w-full py-2 bg-error text-white text-xs font-bold rounded-lg hover:bg-error/90 transition-colors active:scale-95">Administer Now</button>
+            </div>
+            <div class="p-4 bg-white rounded-xl border-l-4 border-primary">
+              <div class="flex justify-between text-[10px] font-black text-secondary uppercase mb-1">
+                <span>Room 408</span><span class="text-primary">Due 10:00</span>
+              </div>
+              <p class="text-sm font-extrabold text-on-surface">Ceftriaxone</p>
+              <p class="text-xs text-secondary mb-3">1g, IV Piggyback</p>
+              <button class="w-full py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-container transition-colors active:scale-95">Prepare Dose</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Shift Tasks -->
+        <section class="bg-surface-container-lowest p-5 rounded-2xl tonal-shadow border border-outline-variant/10">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xs font-bold text-on-surface uppercase tracking-tight">Shift Tasks</h3>
+            <span class="text-[10px] font-bold text-secondary bg-surface-container px-2 py-0.5 rounded">4 Pending</span>
+          </div>
+          <div class="space-y-2">
+            <label class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-low transition-colors cursor-pointer">
+              <input type="checkbox" class="w-4 h-4 rounded border-outline-variant text-tertiary focus:ring-tertiary"/>
+              <div><p class="text-sm font-semibold">Pain Assessment (402-B)</p><p class="text-[10px] text-secondary">Required Q4H · Last: 06:15</p></div>
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-low transition-colors cursor-pointer">
+              <input type="checkbox" class="w-4 h-4 rounded border-outline-variant text-tertiary focus:ring-tertiary"/>
+              <div><p class="text-sm font-semibold">Wound Care (410)</p><p class="text-[10px] text-secondary">Dressing change scheduled</p></div>
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-low transition-colors cursor-pointer">
+              <input type="checkbox" class="w-4 h-4 rounded border-outline-variant text-tertiary focus:ring-tertiary"/>
+              <div><p class="text-sm font-semibold">Post-Op Vital Check (402-A)</p><p class="text-[10px] text-secondary">Due in 5 minutes</p></div>
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-surface-container-low/30 opacity-50">
+              <input type="checkbox" checked class="w-4 h-4 rounded border-outline-variant text-tertiary"/>
+              <div><p class="text-sm font-semibold line-through">Admission Paperwork (412)</p><p class="text-[10px] text-secondary italic">Completed</p></div>
+            </label>
+          </div>
+          <button class="w-full mt-3 py-2 text-xs font-bold text-tertiary hover:bg-tertiary-fixed rounded-lg transition-colors border border-tertiary/20 border-dashed">+ Add Shift Note</button>
+        </section>
+
+        <!-- Care Team -->
+        <section class="bg-surface-container-low p-5 rounded-2xl border border-outline-variant/10">
+          <h4 class="text-xs font-bold text-secondary uppercase mb-4 tracking-widest">Care Team On-Call</h4>
+          <div class="space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold text-xs">DR</div>
+              <div><p class="text-xs font-bold">Dr. Richardson</p><p class="text-[10px] text-secondary">Attending Surgeon</p></div>
+              <button class="ml-auto p-2 bg-white rounded-full tonal-shadow"><span class="material-symbols-outlined text-sm text-primary">chat</span></button>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed-variant font-bold text-xs">RT</div>
+              <div><p class="text-xs font-bold">L. Thompson</p><p class="text-[10px] text-secondary">Resp. Therapist</p></div>
+              <button class="ml-auto p-2 bg-white rounded-full tonal-shadow"><span class="material-symbols-outlined text-sm text-primary">chat</span></button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- FAB -->
+<div class="fixed bottom-8 right-8 z-50">
+  <button class="w-16 h-16 bg-gradient-to-br from-primary to-primary-container text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-105 transition-transform active:scale-95">
+    <span class="material-symbols-outlined text-3xl">emergency</span>
+  </button>
+</div>
+<script src="{{ url_for('static', filename='js/vitalis.js') }}" defer></script>
+</body>
+</html>

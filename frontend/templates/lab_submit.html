@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Submit Lab Results | Vitalis EHR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        "primary":"#00488d","primary-container":"#005fb8","on-primary":"#ffffff",
+        "secondary":"#53606f","secondary-container":"#d6e4f7","on-secondary-container":"#586676",
+        "tertiary":"#00524f","tertiary-container":"#006c69","on-tertiary":"#ffffff",
+        "tertiary-fixed":"#92f3ed","on-tertiary-fixed-variant":"#00504d",
+        "error":"#ba1a1a","error-container":"#ffdad6","on-error-container":"#93000a",
+        "surface":"#f8f9fa","surface-container-lowest":"#ffffff","surface-container-low":"#f3f4f5",
+        "surface-container-high":"#e7e8e9","surface-container-highest":"#e1e3e4",
+        "on-surface":"#191c1d","on-surface-variant":"#424752","outline":"#727783","outline-variant":"#c2c6d4",
+      },
+      fontFamily:{"sans":["Inter","sans-serif"]}
+    }
+  }
+}
+</script>
+<style>
+  body{font-family:'Inter',sans-serif;}
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
+  .glass-panel{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);background:rgba(248,249,250,0.85);}
+  .tonal-shadow{box-shadow:0 12px 40px rgba(0,72,141,0.06);}
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/vitalis.css') }}"/>
+</head>
+<body class="bg-surface text-on-surface antialiased overflow-x-hidden">
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- TopAppBar -->
+<header class="fixed top-0 z-50 w-full glass-panel shadow-sm shadow-blue-900/5 flex justify-between items-center px-6 py-3">
+  <div class="flex items-center gap-6">
+    <span class="text-lg font-black tracking-tighter text-blue-900 pl-64">Vitalis EHR</span>
+  </div>
+  <div class="flex items-center gap-2">
+    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white text-xs font-bold">{{ user.full_name[:2]|upper }}</div>
+    <p class="text-xs font-bold text-on-surface hidden md:block">{{ user.full_name }}</p>
+  </div>
+</header>
+
+<!-- Sidebar -->
+<aside class="fixed left-0 top-0 h-full w-64 flex flex-col bg-slate-50 border-r border-slate-200/50 z-40 pt-20">
+  <div class="px-6 mb-6">
+    <div class="flex items-center gap-3 mb-5">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">biotech</span>
+      </div>
+      <div>
+        <h2 class="text-sm font-black text-blue-900 leading-tight">Vitalis EHR</h2>
+        <p class="text-[10px] uppercase tracking-widest text-secondary font-bold">Lab Console</p>
+      </div>
+    </div>
+  </div>
+  <nav class="flex-1 px-3 space-y-0.5">
+    <a href="{{ url_for('dashboard_bp.lab_dashboard') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">dashboard</span> Dashboard</a>
+    <a href="{{ url_for('api_bp.encryption_proof') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">lock</span> Encryption Proof</a>
+  </nav>
+  <div class="px-3 py-4 border-t border-slate-100">
+    <a href="{{ url_for('auth_bp.logout') }}" class="flex items-center gap-3 px-4 py-2 text-error hover:bg-error/5 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">logout</span> Logout</a>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main id="main-content" class="ml-64 pt-20 px-8 pb-12 min-h-screen">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="mb-6 space-y-3">
+    {% for category, message in messages %}
+    <div class="flex items-center gap-3 p-4 rounded-xl border
+      {% if category == 'error' %}bg-red-50 border-red-200 text-red-800
+      {% elif category == 'success' %}bg-emerald-50 border-emerald-200 text-emerald-800
+      {% else %}bg-amber-50 border-amber-200 text-amber-800{% endif %}">
+      <span class="material-symbols-outlined text-sm">{% if category == 'error' %}error{% elif category == 'success' %}check_circle{% else %}info{% endif %}</span>
+      <span class="text-sm font-medium">{{ message }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  <!-- Page Header -->
+  <header class="mb-8">
+    <a href="{{ url_for('dashboard_bp.lab_dashboard') }}" class="text-xs text-primary font-bold uppercase tracking-widest hover:underline inline-flex items-center gap-1 mb-2">
+      <span class="material-symbols-outlined text-sm">arrow_back</span> Back to Queue
+    </a>
+    <h1 class="text-3xl font-black tracking-tight text-on-surface">Submit Lab Results</h1>
+    <p class="text-sm text-secondary mt-1">Record ID: <span class="font-mono text-xs">{{ record.id }}</span></p>
+  </header>
+
+  <!-- Patient Info -->
+  <div class="bg-surface-container-lowest rounded-2xl p-6 tonal-shadow mb-6">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center text-primary text-lg font-bold">
+        {% if record.users %}{{ record.users.full_name[:2]|upper }}{% else %}??{% endif %}
+      </div>
+      <div>
+        <h2 class="text-lg font-bold text-on-surface">{% if record.users %}{{ record.users.full_name }}{% else %}Unknown Patient{% endif %}</h2>
+        <p class="text-sm text-secondary">{% if record.users %}{{ record.users.email }}{% endif %}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Signature Warning -->
+  <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-6 flex items-start gap-3">
+    <span class="material-symbols-outlined text-blue-600 text-lg mt-0.5" style="font-variation-settings:'FILL' 1;">draw</span>
+    <div>
+      <p class="text-sm font-bold text-blue-800">Digital Signature Notice</p>
+      <p class="text-xs text-blue-600 mt-1">Your RSA-2048 digital signature will be automatically applied to these results. This creates a <strong>cryptographic chain of custody</strong> proving:</p>
+      <ul class="text-xs text-blue-600 mt-2 space-y-1 list-disc list-inside">
+        <li>WHO submitted these results (non-repudiation)</li>
+        <li>WHEN they were submitted (timestamp)</li>
+        <li>That results have NOT been altered since signing</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Submit Form -->
+  <form method="POST" action="{{ url_for('lab_bp.submit_lab_results', record_id=record.id) }}" class="bg-surface-container-lowest rounded-2xl p-7 tonal-shadow">
+    <h3 class="text-sm font-bold text-on-surface mb-4 flex items-center gap-2">
+      <span class="material-symbols-outlined text-amber-600 text-base" style="font-variation-settings:'FILL' 1;">science</span>
+      Lab Results
+    </h3>
+    <textarea name="lab_results" rows="10" required placeholder="Enter lab results here...&#10;&#10;Example:&#10;CBC: WBC 7.2, RBC 4.8, Hgb 14.2, Hct 42%&#10;BMP: Na 140, K 4.1, Cl 102, CO2 24&#10;Lipid Panel: TC 210, LDL 145, HDL 52, TG 165" class="w-full bg-surface-container-high border-none border-b-2 border-transparent rounded-t-lg p-4 text-sm font-mono outline-none focus:border-b-primary transition-colors resize-y min-h-[200px]"></textarea>
+
+    <div class="mt-6 flex items-center justify-between">
+      <div class="flex items-center gap-2 text-xs text-secondary">
+        <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">encrypted</span>
+        Results will be AES-256-CBC encrypted before storage
+      </div>
+      <button type="submit" class="px-6 py-3 bg-gradient-to-r from-primary to-primary-container text-white rounded-xl font-bold text-sm flex items-center gap-2 hover:opacity-90 transition-opacity tonal-shadow">
+        <span class="material-symbols-outlined text-base">draw</span> Sign &amp; Submit Results
+      </button>
+    </div>
+  </form>
+
+</main>
+<script src="{{ url_for('static', filename='js/vitalis.js') }}" defer></script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Create Health Record | Vitalis EHR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{
+  "primary":"#00488d","primary-container":"#005fb8","on-primary":"#ffffff",
+  "primary-fixed":"#d6e3ff","on-primary-fixed":"#001b3d","on-primary-fixed-variant":"#00468b",
+  "secondary":"#53606f","secondary-container":"#d6e4f7","on-secondary-container":"#586676",
+  "tertiary":"#00524f","on-tertiary":"#ffffff","tertiary-fixed":"#92f3ed","on-tertiary-fixed-variant":"#00504d",
+  "error":"#ba1a1a","error-container":"#ffdad6","on-error-container":"#93000a",
+  "surface":"#f8f9fa","surface-container-lowest":"#ffffff","surface-container-low":"#f3f4f5",
+  "surface-container":"#edeeef","surface-container-high":"#e7e8e9","surface-container-highest":"#e1e3e4",
+  "on-surface":"#191c1d","on-surface-variant":"#424752","outline":"#727783","outline-variant":"#c2c6d4",
+},borderRadius:{"xl":"0.5rem","full":"0.75rem"},fontFamily:{"sans":["Inter","sans-serif"]}}}}
+</script>
+<style>
+  body{font-family:'Inter',sans-serif;}
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
+  .glass-panel{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);background:rgba(248,249,250,0.85);}
+  .tonal-shadow{box-shadow:0 12px 40px rgba(0,72,141,0.06);}
+  .enc-field{background:#e1e3e4;border:none;border-bottom:2px solid transparent;border-radius:0.5rem 0.5rem 0 0;padding:0.75rem 1rem;font-size:0.875rem;width:100%;outline:none;resize:vertical;transition:border-color 0.2s;font-family:'Inter',sans-serif;}
+  .enc-field:focus{border-bottom-color:#00488d;}
+  select.enc-field{resize:none;}
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/vitalis.css') }}"/>
+</head>
+<body class="bg-surface text-on-surface antialiased overflow-x-hidden">
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="fixed top-0 z-50 w-full glass-panel shadow-sm shadow-blue-900/5 flex justify-between items-center px-6 py-3">
+  <div class="flex items-center gap-4 pl-64">
+    <span class="text-lg font-black tracking-tighter text-blue-900">Vitalis EHR</span>
+  </div>
+  <div class="flex items-center gap-3">
+    <button class="p-2 rounded-full hover:bg-slate-200/50"><span class="material-symbols-outlined text-on-surface-variant">notifications</span></button>
+    <div class="h-6 w-px bg-outline-variant/30 mx-1"></div>
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white text-xs font-bold">AD</div>
+      <div class="hidden md:block">
+        <p class="text-xs font-bold">Dr. Amara Diallo</p>
+        <p class="text-[10px] text-secondary">Attending Physician</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<aside class="fixed left-0 top-0 h-full w-64 flex flex-col bg-slate-50 border-r border-slate-200/50 z-40 pt-20">
+  <div class="px-6 mb-6">
+    <div class="flex items-center gap-3 mb-5">
+      <div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-white">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">stethoscope</span>
+      </div>
+      <div>
+        <h2 class="text-sm font-black text-blue-900">Vitalis EHR</h2>
+        <p class="text-[10px] uppercase tracking-widest text-secondary font-bold">Clinical Portal</p>
+      </div>
+    </div>
+    <a href="{{ url_for('records_bp.new_record') }}" class="w-full py-2.5 bg-gradient-to-r from-primary to-primary-container text-white rounded-xl font-semibold text-sm flex items-center justify-center gap-2">
+      <span class="material-symbols-outlined text-sm">add</span> New Record
+    </a>
+  </div>
+  <nav class="flex-1 px-3 space-y-0.5">
+    <a href="{{ url_for('dashboard_bp.doctor_dashboard') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">dashboard</span> Dashboard</a>
+    <a href="{{ url_for('records_bp.list_records') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">folder_shared</span> Patient Records</a>
+    <a href="{{ url_for('records_bp.new_record') }}" class="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 border-r-4 border-blue-600 text-sm font-medium translate-x-1 rounded-l-lg"><span class="material-symbols-outlined text-sm">note_add</span> Create Record</a>
+    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">biotech</span> Lab Results</a>
+    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">medication</span> Prescriptions</a>
+  </nav>
+  <div class="px-3 py-4 border-t border-slate-100">
+    <a href="{{ url_for('auth_bp.logout') }}" class="flex items-center gap-3 px-4 py-2 text-error hover:bg-error/5 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">logout</span> Logout</a>
+  </div>
+</aside>
+
+<main id="main-content" class="ml-64 pt-20 px-8 pb-12 min-h-screen">
+  <nav class="flex items-center gap-2 text-xs text-secondary mb-5">
+    <a href="{{ url_for('dashboard_bp.doctor_dashboard') }}" class="hover:text-primary transition-colors">Dashboard</a>
+    <span class="material-symbols-outlined text-xs">chevron_right</span>
+    <a href="{{ url_for('records_bp.list_records') }}" class="hover:text-primary transition-colors">Health Records</a>
+    <span class="material-symbols-outlined text-xs">chevron_right</span>
+    <span class="text-on-surface font-medium">Create New Record</span>
+  </nav>
+
+  <div class="flex gap-7 items-start">
+    <div class="flex-1 max-w-2xl bg-surface-container-lowest rounded-3xl tonal-shadow p-9">
+      <div class="flex items-center gap-3 mb-7">
+        <div class="w-10 h-10 rounded-xl bg-primary-fixed flex items-center justify-center">
+          <span class="material-symbols-outlined text-primary text-xl" style="font-variation-settings:'FILL' 1;">lock</span>
+        </div>
+        <div>
+          <h1 class="text-xl font-black tracking-tight">Create Health Record</h1>
+          <p class="text-xs text-secondary">All fields encrypted with AES-256-CBC before storage</p>
+        </div>
+      </div>
+
+      <form id="recordForm" novalidate>
+        <div class="mb-7">
+          <h2 class="text-xs font-bold uppercase tracking-widest text-secondary mb-4 pb-2 border-b border-surface-container">Patient Selection</h2>
+          <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Select Patient</label>
+          <select id="patientSelect" onchange="updatePreview()" class="enc-field" style="resize:none;padding:0.75rem 1rem;">
+            <option value="">— Choose a patient —</option>
+            <option value="Sarah Martinez">Sarah Martinez (Patient #001)</option>
+            <option value="Elena Kostic">Elena Kostic (Patient #002)</option>
+            <option value="James Miller">James Miller (Patient #003)</option>
+            <option value="Robert Osei">Robert Osei (Patient #004)</option>
+            <option value="Maria Santos">Maria Santos (Patient #005)</option>
+            <option value="Michael Chen">Michael Chen (Patient #006)</option>
+            <option value="Linda Su">Linda Su (Patient #007)</option>
+            <option value="Sofia Rodriguez">Sofia Rodriguez (Patient #008)</option>
+          </select>
+          <p id="patientErr" class="text-xs text-error mt-1 hidden">Please select a patient.</p>
+        </div>
+
+        <div class="mb-7">
+          <h2 class="text-xs font-bold uppercase tracking-widest text-secondary mb-4 pb-2 border-b border-surface-container flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings:'FILL' 1;">lock</span>
+            Encrypted Clinical Data
+          </h2>
+          <div class="space-y-5">
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Diagnosis</label>
+                <span class="flex items-center gap-1 text-[10px] font-bold text-primary bg-primary-fixed px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-[10px]" style="font-variation-settings:'FILL' 1;">lock</span> AES-256 Encrypted</span>
+              </div>
+              <textarea id="diagnosis" rows="4" placeholder="Primary diagnosis and clinical findings..." class="enc-field"></textarea>
+              <p id="diagErr" class="text-xs text-error mt-1 hidden">Diagnosis is required.</p>
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Prescription</label>
+                <span class="flex items-center gap-1 text-[10px] font-bold text-primary bg-primary-fixed px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-[10px]" style="font-variation-settings:'FILL' 1;">lock</span> AES-256 Encrypted</span>
+              </div>
+              <textarea id="prescription" rows="3" placeholder="Medications prescribed, dosage, frequency..." class="enc-field"></textarea>
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Lab Results</label>
+                <span class="flex items-center gap-1 text-[10px] font-bold text-primary bg-primary-fixed px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-[10px]" style="font-variation-settings:'FILL' 1;">lock</span> AES-256 Encrypted</span>
+              </div>
+              <textarea id="labResults" rows="3" placeholder="Lab test results and reference ranges..." class="enc-field"></textarea>
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Clinical Notes</label>
+                <span class="flex items-center gap-1 text-[10px] font-bold text-primary bg-primary-fixed px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-[10px]" style="font-variation-settings:'FILL' 1;">lock</span> AES-256 Encrypted</span>
+              </div>
+              <textarea id="notes" rows="4" placeholder="Additional observations, follow-up instructions..." class="enc-field"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-7 bg-primary-fixed/40 border border-primary/10 rounded-2xl p-5 flex gap-4">
+          <span class="material-symbols-outlined text-primary flex-shrink-0 text-xl" style="font-variation-settings:'FILL' 1;">lock</span>
+          <div>
+            <p class="text-sm font-bold mb-1">AES-256-CBC Encryption Process</p>
+            <p class="text-xs text-secondary leading-relaxed">All four fields are independently encrypted before storage using AES-256-CBC with a unique Initialization Vector (IV) per field. The database stores only ciphertext — no plaintext data is persisted.</p>
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <a href="{{ url_for('records_bp.list_records') }}" class="flex-1 py-3 text-center border border-outline-variant rounded-xl text-sm font-semibold hover:bg-surface-container transition-colors">Cancel</a>
+          <button type="submit" class="flex-1 py-3 bg-gradient-to-r from-primary to-primary-container text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-95">
+            <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">lock</span> Save Encrypted Record
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="w-64 flex-shrink-0 space-y-4 sticky top-24">
+      <div class="bg-surface-container-lowest rounded-2xl p-6 tonal-shadow">
+        <h3 class="text-xs font-bold uppercase tracking-widest text-secondary mb-4">Record Preview</h3>
+        <div class="space-y-3 text-sm">
+          <div><p class="text-[10px] uppercase text-secondary font-bold">Patient</p><p id="prev-patient" class="font-semibold">—</p></div>
+          <div><p class="text-[10px] uppercase text-secondary font-bold">Created By</p><p class="font-semibold">Dr. Amara Diallo</p></div>
+          <div><p class="text-[10px] uppercase text-secondary font-bold">Role</p><p class="font-semibold">Doctor</p></div>
+          <div><p class="text-[10px] uppercase text-secondary font-bold">Date</p><p id="prev-date" class="font-semibold"></p></div>
+          <div><p class="text-[10px] uppercase text-secondary font-bold">Encryption</p><p class="font-semibold text-primary flex items-center gap-1"><span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">lock</span> AES-256-CBC</p></div>
+        </div>
+      </div>
+      <div class="bg-primary-fixed rounded-2xl p-5">
+        <p class="text-xs font-bold text-on-primary-fixed-variant mb-2">Access Control</p>
+        <p class="text-xs text-on-primary-fixed/80 leading-relaxed">Viewable by: Doctors (all), assigned Patient (own only), Admin. Nurses see only records they created.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="{{ url_for('static', filename='js/vitalis.js') }}" defer></script>
+<script>
+document.getElementById('prev-date').textContent = new Date().toISOString().split('T')[0];
+function updatePreview() {
+  document.getElementById('prev-patient').textContent = document.getElementById('patientSelect').value || '—';
+}
+document.getElementById('recordForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const patient = document.getElementById('patientSelect').value;
+  const diagnosis = document.getElementById('diagnosis').value.trim();
+  document.getElementById('patientErr').classList.toggle('hidden', !!patient);
+  document.getElementById('diagErr').classList.toggle('hidden', !!diagnosis);
+  if (patient && diagnosis) {
+    alert('Record saved! All fields encrypted with AES-256-CBC. Audit log entry created. (Demo mode)');
+    window.location.href = '{{ url_for("records_bp.list_records") }}';
+  }
+});
+</script>
+</body>
+</html>

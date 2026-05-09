@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>My Health | Vitalis EHR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{
+  "primary":"#00488d","primary-container":"#005fb8","on-primary":"#ffffff","on-primary-container":"#cadcff",
+  "primary-fixed":"#d6e3ff","on-primary-fixed-variant":"#00468b",
+  "secondary":"#53606f","secondary-container":"#d6e4f7","on-secondary-container":"#586676",
+  "tertiary":"#00524f","tertiary-container":"#006c69","on-tertiary":"#ffffff",
+  "tertiary-fixed":"#92f3ed","on-tertiary-fixed":"#00201f","on-tertiary-fixed-variant":"#00504d",
+  "error":"#ba1a1a","error-container":"#ffdad6","on-error-container":"#93000a",
+  "surface":"#f8f9fa","surface-container-lowest":"#ffffff","surface-container-low":"#f3f4f5",
+  "surface-container":"#edeeef","surface-container-high":"#e7e8e9","surface-container-highest":"#e1e3e4",
+  "on-surface":"#191c1d","on-surface-variant":"#424752","outline":"#727783","outline-variant":"#c2c6d4",
+},borderRadius:{"xl":"0.5rem","full":"0.75rem"},fontFamily:{"sans":["Inter","sans-serif"]}}}}
+</script>
+<style>
+  body{font-family:'Inter',sans-serif;}
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
+  .glass-panel{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);background:rgba(248,249,250,0.85);}
+  .tonal-shadow{box-shadow:0 12px 40px rgba(0,72,141,0.06);}
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/vitalis.css') }}"/>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- TopAppBar -->
+<header class="fixed top-0 z-50 w-full glass-panel shadow-sm shadow-blue-900/5 flex justify-between items-center px-6 py-3">
+  <div class="flex items-center gap-8">
+    <span class="text-lg font-black tracking-tighter text-blue-900 pl-64">Vitalis EHR</span>
+    <div class="hidden md:flex items-center bg-surface-container-low px-4 py-1.5 rounded-full w-72">
+      <span class="material-symbols-outlined text-secondary mr-2 text-sm">search</span>
+      <input type="text" placeholder="Search my records..." class="bg-transparent border-none focus:ring-0 text-sm w-full outline-none placeholder:text-secondary"/>
+    </div>
+  </div>
+  <nav class="hidden md:flex items-center gap-5">
+    <a href="#" class="text-primary font-semibold text-sm">Dashboard</a>
+    <a href="#" class="text-secondary hover:text-on-surface transition-colors text-sm px-2 py-1 rounded-md hover:bg-slate-200/50">Appointments</a>
+    <a href="#" class="text-secondary hover:text-on-surface transition-colors text-sm px-2 py-1 rounded-md hover:bg-slate-200/50">Messages</a>
+  </nav>
+  <div class="flex items-center gap-3">
+    <button class="p-2 rounded-full hover:bg-slate-200/50 transition-colors"><span class="material-symbols-outlined text-on-surface-variant">notifications</span></button>
+    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-tertiary to-tertiary-container flex items-center justify-center text-white text-xs font-bold border-2 border-primary-fixed">SM</div>
+  </div>
+</header>
+
+<!-- Sidebar -->
+<aside class="hidden md:flex bg-slate-50 fixed left-0 top-0 h-full w-64 flex-col border-r border-slate-200/50 z-40 pt-20">
+  <div class="px-6 mb-6">
+    <div class="flex items-center gap-3 mb-2">
+      <div class="w-10 h-10 bg-primary-container rounded-xl flex items-center justify-center">
+        <span class="material-symbols-outlined text-white text-base" style="font-variation-settings:'FILL' 1;">health_and_safety</span>
+      </div>
+      <div>
+        <h2 class="text-sm font-black text-blue-900">Vitalis EHR</h2>
+        <span class="text-xs text-secondary">Patient Portal</span>
+      </div>
+    </div>
+  </div>
+  <nav class="flex-1 px-3 space-y-0.5">
+    <a href="{{ url_for('dashboard_bp.patient_dashboard') }}" class="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 border-r-4 border-blue-600 text-sm font-medium translate-x-1 rounded-l-lg"><span class="material-symbols-outlined text-sm">dashboard</span> Dashboard</a>
+    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">person</span> Health Profile</a>
+    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">medical_information</span> My Records</a>
+    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">biotech</span> Lab Results</a>
+    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">medication</span> Medications</a>
+    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">vaccines</span> Immunizations</a>
+  </nav>
+  <div class="p-4 bg-slate-100/50 m-4 rounded-xl">
+    <button class="w-full bg-gradient-to-r from-tertiary to-tertiary-container text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity">
+      <span class="material-symbols-outlined text-sm">calendar_add_on</span> Book Visit
+    </button>
+  </div>
+  <div class="px-3 pb-6 space-y-0.5">
+    <a href="#" class="flex items-center gap-3 px-4 py-2 text-slate-600 hover:bg-slate-100 text-sm rounded-lg"><span class="material-symbols-outlined text-sm">security</span> Privacy Settings</a>
+    <a href="{{ url_for('auth_bp.logout') }}" class="flex items-center gap-3 px-4 py-2 text-error hover:bg-error/5 text-sm rounded-lg"><span class="material-symbols-outlined text-sm">logout</span> Sign Out</a>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main id="main-content" class="md:ml-64 pt-20 px-6 pb-20 min-h-screen">
+
+  <!-- Welcome Hero -->
+  <section class="mt-7 mb-8 relative overflow-hidden rounded-3xl bg-gradient-to-br from-tertiary/10 to-primary/5 p-8 flex flex-col md:flex-row items-center justify-between">
+    <div class="relative z-10 max-w-xl">
+      <h1 class="text-3xl font-bold text-tertiary mb-2">Good morning, Sarah.</h1>
+      <p class="text-secondary text-lg mb-5">Your health is looking great! 1 upcoming appointment · 2 new lab results to review.</p>
+      <div class="flex gap-3 flex-wrap">
+        <button class="bg-tertiary text-white px-6 py-2.5 rounded-xl font-semibold shadow-lg shadow-tertiary/20 flex items-center gap-2 text-sm hover:opacity-90 transition-opacity">
+          View My Records <span class="material-symbols-outlined text-sm">arrow_forward</span>
+        </button>
+        <button class="bg-surface-container-lowest text-tertiary px-6 py-2.5 rounded-xl font-semibold text-sm flex items-center gap-2 border border-tertiary/10 hover:bg-surface-container transition-colors">
+          Check Messages
+        </button>
+      </div>
+    </div>
+    <div class="hidden md:block mt-6 md:mt-0">
+      <div class="w-48 h-48 rounded-2xl bg-gradient-to-br from-tertiary/20 to-primary/10 flex items-center justify-center rotate-3">
+        <span class="material-symbols-outlined text-8xl text-tertiary/40" style="font-variation-settings:'FILL' 1;">health_and_safety</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bento Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- Left Column -->
+    <div class="lg:col-span-8 space-y-5">
+      <!-- Health Summary -->
+      <div class="bg-surface-container-lowest rounded-3xl p-6 tonal-shadow border border-outline-variant/10">
+        <div class="flex justify-between items-center mb-5">
+          <h3 class="text-xl font-bold text-on-surface">My Health Summary</h3>
+          <button class="text-primary text-sm font-semibold flex items-center gap-1 hover:underline underline-offset-4">Detailed View <span class="material-symbols-outlined text-xs">open_in_new</span></button>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="bg-surface-container-low p-4 rounded-2xl flex flex-col items-center text-center">
+            <span class="material-symbols-outlined text-tertiary mb-2 text-2xl" style="font-variation-settings:'FILL' 1;">favorite</span>
+            <span class="text-xs font-bold uppercase tracking-widest text-secondary mb-1">Heart Rate</span>
+            <span class="text-2xl font-bold text-on-surface">72 <span class="text-xs font-normal">bpm</span></span>
+            <span class="mt-2 text-[10px] px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full">Stable</span>
+          </div>
+          <div class="bg-surface-container-low p-4 rounded-2xl flex flex-col items-center text-center">
+            <span class="material-symbols-outlined text-primary mb-2 text-2xl">speed</span>
+            <span class="text-xs font-bold uppercase tracking-widest text-secondary mb-1">Blood Pressure</span>
+            <span class="text-2xl font-bold text-on-surface">120/80</span>
+            <span class="mt-2 text-[10px] px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full">Optimal</span>
+          </div>
+          <div class="bg-surface-container-low p-4 rounded-2xl flex flex-col items-center text-center">
+            <span class="material-symbols-outlined text-orange-500 mb-2 text-2xl">bloodtype</span>
+            <span class="text-xs font-bold uppercase tracking-widest text-secondary mb-1">Blood Sugar</span>
+            <span class="text-2xl font-bold text-on-surface">94 <span class="text-xs font-normal">mg/dL</span></span>
+            <span class="mt-2 text-[10px] px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full">Stable</span>
+          </div>
+          <div class="bg-surface-container-low p-4 rounded-2xl flex flex-col items-center text-center">
+            <span class="material-symbols-outlined text-blue-500 mb-2 text-2xl">monitor_weight</span>
+            <span class="text-xs font-bold uppercase tracking-widest text-secondary mb-1">BMI</span>
+            <span class="text-2xl font-bold text-on-surface">22.4</span>
+            <span class="mt-2 text-[10px] px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full">Healthy</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Appointment + Immunizations -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="bg-surface-container-lowest rounded-3xl p-6 tonal-shadow border border-outline-variant/10">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-lg">Next Appointment</h3>
+            <span class="material-symbols-outlined text-primary">calendar_today</span>
+          </div>
+          <div class="flex items-start gap-4 mb-5">
+            <div class="bg-primary-fixed p-3 rounded-2xl text-center min-w-[56px]">
+              <span class="block text-xs font-bold text-primary uppercase">Oct</span>
+              <span class="block text-2xl font-black text-primary">24</span>
+            </div>
+            <div>
+              <h4 class="font-bold text-on-surface">Annual Physical Exam</h4>
+              <p class="text-sm text-secondary">Dr. Amara Diallo</p>
+              <p class="text-xs text-secondary mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-xs">location_on</span> Main Building, Room 402</p>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button class="flex-1 py-2 text-xs font-bold border border-outline-variant rounded-xl hover:bg-surface-container transition-colors">Reschedule</button>
+            <button class="flex-1 py-2 text-xs font-bold bg-primary text-white rounded-xl hover:bg-primary-container transition-colors">Check-In</button>
+          </div>
+        </div>
+        <div class="bg-surface-container-lowest rounded-3xl p-6 tonal-shadow border border-outline-variant/10">
+          <h3 class="font-bold text-lg mb-4">Immunization Records</h3>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between group cursor-pointer">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-tertiary/10 flex items-center justify-center"><span class="material-symbols-outlined text-tertiary text-sm" style="font-variation-settings:'wght' 700;">done</span></div>
+                <div><p class="text-sm font-bold">Influenza (Flu Shot)</p><p class="text-[10px] text-secondary">Sept 12, 2023</p></div>
+              </div>
+              <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-sm">download</span>
+            </div>
+            <div class="flex items-center justify-between group cursor-pointer">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-tertiary/10 flex items-center justify-center"><span class="material-symbols-outlined text-tertiary text-sm" style="font-variation-settings:'wght' 700;">done</span></div>
+                <div><p class="text-sm font-bold">Tdap Vaccine</p><p class="text-[10px] text-secondary">Jan 5, 2022</p></div>
+              </div>
+              <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-sm">download</span>
+            </div>
+            <div class="flex items-center justify-between group cursor-pointer">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-tertiary/10 flex items-center justify-center"><span class="material-symbols-outlined text-tertiary text-sm" style="font-variation-settings:'wght' 700;">done</span></div>
+                <div><p class="text-sm font-bold">COVID-19 Booster</p><p class="text-[10px] text-secondary">Nov 18, 2023</p></div>
+              </div>
+              <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-sm">download</span>
+            </div>
+          </div>
+          <button class="w-full mt-4 py-2 text-xs font-bold text-primary hover:underline">View All Immunizations</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messaging Sidebar -->
+    <div class="lg:col-span-4">
+      <div class="bg-surface-container-lowest rounded-3xl tonal-shadow border border-outline-variant/10 h-full flex flex-col overflow-hidden">
+        <div class="p-5 border-b border-surface-container-low flex justify-between items-center">
+          <div>
+            <h3 class="font-bold text-lg">Care Team Messages</h3>
+            <p class="text-xs text-secondary">Typically replies in &lt; 4 hours</p>
+          </div>
+          <button class="bg-primary-fixed p-2 rounded-full text-primary hover:bg-primary-fixed/60 transition-colors">
+            <span class="material-symbols-outlined text-sm">edit_square</span>
+          </button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 space-y-4 max-h-80">
+          <div class="flex gap-3">
+            <div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-xs font-bold text-primary flex-shrink-0">AD</div>
+            <div class="bg-surface-container-low p-3 rounded-2xl rounded-tl-none max-w-[85%]">
+              <p class="text-xs font-bold text-primary mb-1">Dr. Amara Diallo</p>
+              <p class="text-xs text-on-surface leading-relaxed">Hi Sarah, your recent cholesterol results came back within the normal range. Keep up the great habits!</p>
+              <p class="text-[10px] text-secondary mt-2 text-right">Yesterday, 4:32 PM</p>
+            </div>
+          </div>
+          <div class="flex gap-3 flex-row-reverse">
+            <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">SM</div>
+            <div class="bg-primary text-white p-3 rounded-2xl rounded-tr-none max-w-[85%]">
+              <p class="text-xs leading-relaxed">That's great news! Thank you, Dr. Diallo. See you on the 24th.</p>
+              <p class="text-[10px] text-white/70 mt-2">Today, 9:15 AM</p>
+            </div>
+          </div>
+        </div>
+        <div class="p-4 bg-surface-container-low/50">
+          <div class="bg-surface-container-lowest rounded-2xl p-2 border border-outline-variant/20 flex items-center gap-2">
+            <input type="text" placeholder="Type a message..." class="bg-transparent border-none focus:ring-0 text-xs flex-1 px-2 outline-none"/>
+            <button class="bg-primary text-white p-2 rounded-xl hover:bg-primary-container transition-colors">
+              <span class="material-symbols-outlined text-sm">send</span>
+            </button>
+          </div>
+          <p class="text-[10px] text-secondary text-center mt-2 px-2">For emergencies, please call 911 or visit the nearest ER.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Resources -->
+  <section class="mt-10">
+    <h3 class="font-bold text-xl mb-5">Quick Resources</h3>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+      <div class="group bg-surface-container-low hover:bg-tertiary/5 p-6 rounded-3xl transition-all border border-transparent hover:border-tertiary/20 cursor-pointer">
+        <span class="material-symbols-outlined text-tertiary text-3xl mb-3 block">request_quote</span>
+        <h4 class="font-bold text-on-surface mb-1">Pay Bill</h4>
+        <p class="text-xs text-secondary">View and settle your hospital invoices securely.</p>
+      </div>
+      <div class="group bg-surface-container-low hover:bg-primary/5 p-6 rounded-3xl transition-all border border-transparent hover:border-primary/20 cursor-pointer">
+        <span class="material-symbols-outlined text-primary text-3xl mb-3 block">medication</span>
+        <h4 class="font-bold text-on-surface mb-1">Prescriptions</h4>
+        <p class="text-xs text-secondary">Request refills or view current medication history.</p>
+      </div>
+      <div class="group bg-surface-container-low hover:bg-tertiary/5 p-6 rounded-3xl transition-all border border-transparent hover:border-tertiary/20 cursor-pointer">
+        <span class="material-symbols-outlined text-tertiary text-3xl mb-3 block">description</span>
+        <h4 class="font-bold text-on-surface mb-1">Visit Notes</h4>
+        <p class="text-xs text-secondary">Read summaries from your recent consultations.</p>
+      </div>
+      <div class="group bg-surface-container-low hover:bg-primary/5 p-6 rounded-3xl transition-all border border-transparent hover:border-primary/20 cursor-pointer">
+        <span class="material-symbols-outlined text-primary text-3xl mb-3 block">folder_shared</span>
+        <h4 class="font-bold text-on-surface mb-1">Record Sharing</h4>
+        <p class="text-xs text-secondary">Authorize caregivers to view your records.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="{{ url_for('static', filename='js/vitalis.js') }}" defer></script>
+<!-- Mobile Bottom Nav -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-lowest flex justify-around items-center py-3 px-4 z-50 border-t border-surface-container">
+  <a href="#" class="flex flex-col items-center gap-1 text-primary"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">dashboard</span><span class="text-[10px] font-bold">Home</span></a>
+  <a href="#" class="flex flex-col items-center gap-1 text-secondary"><span class="material-symbols-outlined">calendar_month</span><span class="text-[10px] font-medium">Visits</span></a>
+  <a href="#" class="flex flex-col items-center gap-1 text-secondary"><span class="material-symbols-outlined">chat_bubble</span><span class="text-[10px] font-medium">Care</span></a>
+  <a href="#" class="flex flex-col items-center gap-1 text-secondary"><span class="material-symbols-outlined">account_circle</span><span class="text-[10px] font-medium">Profile</span></a>
+</nav>
+</body>
+</html>

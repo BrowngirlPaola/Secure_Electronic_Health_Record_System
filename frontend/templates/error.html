@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>{{ code }} | Vitalis EHR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        "primary": "#00488d","primary-container": "#005fb8","on-primary": "#ffffff",
+        "tertiary": "#00524f","error": "#ba1a1a","error-container": "#ffdad6",
+        "surface": "#f8f9fa","on-surface": "#191c1d","secondary": "#53606f",
+        "outline-variant": "#c2c6d4",
+      },
+      fontFamily: { "sans": ["Inter","sans-serif"] }
+    }
+  }
+}
+</script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/vitalis.css') }}"/>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col items-center justify-center">
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<main id="main-content" class="text-center px-6">
+  <div class="mb-6">
+    {% if code == 403 %}
+    <span class="material-symbols-outlined text-error" style="font-size:80px;font-variation-settings:'FILL' 1;">lock</span>
+    {% elif code == 404 %}
+    <span class="material-symbols-outlined text-secondary" style="font-size:80px;font-variation-settings:'FILL' 1;">search_off</span>
+    {% else %}
+    <span class="material-symbols-outlined text-error" style="font-size:80px;font-variation-settings:'FILL' 1;">error</span>
+    {% endif %}
+  </div>
+  <h1 class="text-7xl font-black text-blue-900 mb-2">{{ code }}</h1>
+  <p class="text-lg text-secondary mb-8 max-w-md mx-auto">{{ message }}</p>
+  <div class="flex gap-4 justify-center">
+    <a href="{{ url_for('index') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-primary-container text-white font-bold py-3 px-6 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20">
+      <span class="material-symbols-outlined text-sm">home</span>
+      Go Home
+    </a>
+    <button onclick="history.back()" class="inline-flex items-center gap-2 bg-surface-container-highest text-on-surface font-bold py-3 px-6 rounded-xl hover:bg-outline-variant/30 transition-colors">
+      <span class="material-symbols-outlined text-sm">arrow_back</span>
+      Go Back
+    </button>
+  </div>
+  <p class="text-xs text-secondary mt-12">All access attempts are logged and audited.</p>
+</main>
+
+<script src="{{ url_for('static', filename='js/vitalis.js') }}" defer></script>
+</body>
+</html>

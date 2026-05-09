@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Add New User | Vitalis EHR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{
+  "primary":"#00488d","primary-container":"#005fb8","on-primary":"#ffffff",
+  "primary-fixed":"#d6e3ff","on-primary-fixed":"#001b3d","on-primary-fixed-variant":"#00468b",
+  "secondary":"#53606f","secondary-container":"#d6e4f7","on-secondary-container":"#586676",
+  "tertiary":"#00524f","on-tertiary":"#ffffff","tertiary-fixed":"#92f3ed","on-tertiary-fixed-variant":"#00504d",
+  "error":"#ba1a1a","error-container":"#ffdad6","on-error-container":"#93000a",
+  "surface":"#f8f9fa","surface-container-lowest":"#ffffff","surface-container-low":"#f3f4f5",
+  "surface-container":"#edeeef","surface-container-high":"#e7e8e9","surface-container-highest":"#e1e3e4",
+  "on-surface":"#191c1d","on-surface-variant":"#424752","outline":"#727783","outline-variant":"#c2c6d4",
+},borderRadius:{"xl":"0.5rem","full":"0.75rem"},fontFamily:{"sans":["Inter","sans-serif"]}}}}
+</script>
+<style>
+  body{font-family:'Inter',sans-serif;}
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
+  .glass-panel{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);background:rgba(248,249,250,0.85);}
+  .tonal-shadow{box-shadow:0 12px 40px rgba(0,72,141,0.06);}
+  .input-field{width:100%;background:#e1e3e4;border:none;border-bottom:2px solid transparent;border-radius:0.5rem 0.5rem 0 0;padding:0.75rem 1rem;font-size:0.875rem;outline:none;transition:border-color 0.2s;}
+  .input-field:focus{border-bottom-color:#00488d;}
+  .role-card{cursor:pointer;border:2px solid transparent;transition:all 0.2s;}
+  .role-card.selected{border-color:#00488d;background:#d6e3ff;}
+  .req-item{transition:color 0.2s;}
+  .req-item.met{color:#00524f;}
+  .req-item.met .req-icon{color:#00524f;}
+  .strength-bar{height:4px;border-radius:2px;background:#e1e3e4;transition:background 0.3s;}
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/vitalis.css') }}"/>
+</head>
+<body class="bg-surface text-on-surface antialiased overflow-x-hidden">
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- TopAppBar -->
+<header class="fixed top-0 z-50 w-full glass-panel shadow-sm shadow-blue-900/5 flex justify-between items-center px-6 py-3">
+  <div class="flex items-center gap-4 pl-64">
+    <span class="text-lg font-black tracking-tighter text-blue-900">Vitalis EHR</span>
+  </div>
+  <div class="flex items-center gap-3">
+    <button class="p-2 rounded-full hover:bg-slate-200/50"><span class="material-symbols-outlined text-on-surface-variant">notifications</span></button>
+    <div class="h-6 w-px bg-outline-variant/30 mx-1"></div>
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white text-xs font-bold">AD</div>
+      <div class="hidden md:block">
+        <p class="text-xs font-bold">Administrator</p>
+        <p class="text-[10px] text-secondary">System Admin</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Sidebar -->
+<aside class="fixed left-0 top-0 h-full w-64 flex flex-col bg-slate-50 border-r border-slate-200/50 z-40 pt-20">
+  <div class="px-6 mb-6">
+    <div class="flex items-center gap-3 mb-5">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">health_and_safety</span>
+      </div>
+      <div>
+        <h2 class="text-sm font-black text-blue-900">Vitalis EHR</h2>
+        <p class="text-[10px] uppercase tracking-widest text-secondary font-bold">Admin Console</p>
+      </div>
+    </div>
+    <a href="{{ url_for('admin_bp.register_user') }}" class="w-full py-2.5 bg-gradient-to-r from-primary to-primary-container text-white rounded-xl font-semibold text-sm flex items-center justify-center gap-2">
+      <span class="material-symbols-outlined text-sm">add_circle</span> New User
+    </a>
+  </div>
+  <nav class="flex-1 px-3 space-y-0.5">
+    <a href="{{ url_for('dashboard_bp.admin_dashboard') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">dashboard</span> Dashboard</a>
+    <a href="{{ url_for('admin_bp.list_users') }}" class="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 border-r-4 border-blue-600 text-sm font-medium translate-x-1 rounded-l-lg"><span class="material-symbols-outlined text-sm">group</span> User Management</a>
+    <a href="{{ url_for('admin_bp.assignments') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">assignment_ind</span> Assignments</a>
+    <a href="{{ url_for('records_bp.list_records') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">folder_shared</span> Health Records</a>
+    <a href="{{ url_for('admin_bp.audit_logs') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">policy</span> Audit Logs</a>
+    <a href="{{ url_for('admin_bp.suspicious_activity') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">warning</span> Suspicious Activity</a>
+    <a href="{{ url_for('api_bp.encryption_proof') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">lock</span> Encryption Proof</a>
+  </nav>
+  <div class="px-3 py-4 border-t border-slate-100">
+    <a href="{{ url_for('auth_bp.logout') }}" class="flex items-center gap-3 px-4 py-2 text-error hover:bg-error/5 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">logout</span> Logout</a>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main id="main-content" class="ml-64 pt-20 px-8 pb-12 min-h-screen">
+
+  <!-- Breadcrumb -->
+  <nav class="flex items-center gap-2 text-xs text-secondary mb-5">
+    <a href="{{ url_for('dashboard_bp.admin_dashboard') }}" class="hover:text-primary transition-colors">Dashboard</a>
+    <span class="material-symbols-outlined text-xs">chevron_right</span>
+    <a href="{{ url_for('admin_bp.list_users') }}" class="hover:text-primary transition-colors">User Management</a>
+    <span class="material-symbols-outlined text-xs">chevron_right</span>
+    <span class="text-on-surface font-medium">Add New User</span>
+  </nav>
+
+  <h1 class="text-2xl font-black tracking-tight mb-7">Add New User</h1>
+
+  <!-- Form Card -->
+  <div class="max-w-2xl bg-surface-container-lowest rounded-3xl tonal-shadow p-10">
+    <form id="registerForm" novalidate>
+
+      <!-- Section 1: Personal Info -->
+      <div class="mb-8">
+        <h2 class="text-xs font-bold uppercase tracking-widest text-secondary mb-5 pb-2 border-b border-surface-container">Personal Information</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Full Name</label>
+            <input id="fullName" type="text" placeholder="e.g. Dr. Amara Diallo" class="input-field"/>
+            <p id="nameErr" class="text-xs text-error mt-1 hidden">Full name is required.</p>
+          </div>
+          <div>
+            <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Email Address</label>
+            <input id="email" type="email" placeholder="e.g. amara@vitalis.ehr" class="input-field"/>
+            <p id="emailErr" class="text-xs text-error mt-1 hidden">Valid email address is required.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Role Selection -->
+      <div class="mb-8">
+        <h2 class="text-xs font-bold uppercase tracking-widest text-secondary mb-5 pb-2 border-b border-surface-container">Account Role</h2>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="role-card p-4 rounded-2xl bg-surface-container-low" onclick="selectRole(this,'Admin')">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-9 h-9 rounded-xl bg-surface-container-highest flex items-center justify-center">
+                <span class="material-symbols-outlined text-on-surface-variant text-base" style="font-variation-settings:'FILL' 1;">admin_panel_settings</span>
+              </div>
+              <span class="font-bold text-sm">Admin</span>
+            </div>
+            <p class="text-xs text-secondary">Full system access, user management</p>
+            <input type="radio" name="role" value="Admin" class="hidden"/>
+          </div>
+          <div class="role-card p-4 rounded-2xl bg-surface-container-low selected" onclick="selectRole(this,'Doctor')">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-9 h-9 rounded-xl bg-primary-fixed flex items-center justify-center">
+                <span class="material-symbols-outlined text-on-primary-fixed-variant text-base" style="font-variation-settings:'FILL' 1;">stethoscope</span>
+              </div>
+              <span class="font-bold text-sm">Doctor</span>
+            </div>
+            <p class="text-xs text-secondary">Patient records, prescriptions, labs</p>
+            <input type="radio" name="role" value="Doctor" checked class="hidden"/>
+          </div>
+          <div class="role-card p-4 rounded-2xl bg-surface-container-low" onclick="selectRole(this,'Nurse')">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-9 h-9 rounded-xl bg-tertiary-fixed flex items-center justify-center">
+                <span class="material-symbols-outlined text-on-tertiary-fixed-variant text-base" style="font-variation-settings:'FILL' 1;">medical_services</span>
+              </div>
+              <span class="font-bold text-sm">Nurse</span>
+            </div>
+            <p class="text-xs text-secondary">Ward monitoring, record creation</p>
+            <input type="radio" name="role" value="Nurse" class="hidden"/>
+          </div>
+          <div class="role-card p-4 rounded-2xl bg-surface-container-low" onclick="selectRole(this,'Patient')">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-9 h-9 rounded-xl bg-secondary-container flex items-center justify-center">
+                <span class="material-symbols-outlined text-on-secondary-container text-base" style="font-variation-settings:'FILL' 1;">person</span>
+              </div>
+              <span class="font-bold text-sm">Patient</span>
+            </div>
+            <p class="text-xs text-secondary">View own records only</p>
+            <input type="radio" name="role" value="Patient" class="hidden"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Password -->
+      <div class="mb-8">
+        <h2 class="text-xs font-bold uppercase tracking-widest text-secondary mb-5 pb-2 border-b border-surface-container">Set Password</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Password</label>
+            <div class="relative">
+              <input id="password" type="password" placeholder="••••••••" class="input-field pr-10" oninput="checkStrength()"/>
+              <button type="button" onclick="toggleVis('password','eye1')" class="absolute right-3 top-3 text-outline hover:text-primary transition-colors">
+                <span class="material-symbols-outlined text-sm" id="eye1">visibility</span>
+              </button>
+            </div>
+            <!-- Strength indicator -->
+            <div class="mt-2 flex gap-1">
+              <div class="strength-bar flex-1" id="s1"></div>
+              <div class="strength-bar flex-1" id="s2"></div>
+              <div class="strength-bar flex-1" id="s3"></div>
+              <div class="strength-bar flex-1" id="s4"></div>
+            </div>
+            <p class="text-[10px] text-secondary mt-1" id="strengthLabel">Enter a password</p>
+          </div>
+          <div>
+            <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Confirm Password</label>
+            <div class="relative">
+              <input id="confirmPassword" type="password" placeholder="••••••••" class="input-field pr-10"/>
+              <button type="button" onclick="toggleVis('confirmPassword','eye2')" class="absolute right-3 top-3 text-outline hover:text-primary transition-colors">
+                <span class="material-symbols-outlined text-sm" id="eye2">visibility</span>
+              </button>
+            </div>
+            <p id="matchErr" class="text-xs text-error mt-1 hidden">Passwords do not match.</p>
+          </div>
+
+          <!-- Requirements -->
+          <div class="bg-surface-container-low rounded-xl p-4 space-y-2">
+            <p class="text-xs font-bold uppercase tracking-widest text-secondary mb-3">Password Requirements (NIST SP 800-63B)</p>
+            <div class="req-item flex items-center gap-2 text-xs text-on-surface-variant" id="req-len">
+              <span class="material-symbols-outlined req-icon text-sm text-outline">radio_button_unchecked</span> At least 8 characters
+            </div>
+            <div class="req-item flex items-center gap-2 text-xs text-on-surface-variant" id="req-upper">
+              <span class="material-symbols-outlined req-icon text-sm text-outline">radio_button_unchecked</span> Uppercase letter (A–Z)
+            </div>
+            <div class="req-item flex items-center gap-2 text-xs text-on-surface-variant" id="req-lower">
+              <span class="material-symbols-outlined req-icon text-sm text-outline">radio_button_unchecked</span> Lowercase letter (a–z)
+            </div>
+            <div class="req-item flex items-center gap-2 text-xs text-on-surface-variant" id="req-num">
+              <span class="material-symbols-outlined req-icon text-sm text-outline">radio_button_unchecked</span> Number (0–9)
+            </div>
+            <div class="req-item flex items-center gap-2 text-xs text-on-surface-variant" id="req-special">
+              <span class="material-symbols-outlined req-icon text-sm text-outline">radio_button_unchecked</span> Special character (!@#$%^&amp;*)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Security Note -->
+      <div class="mb-8 bg-primary-fixed rounded-2xl p-5 flex gap-4">
+        <span class="material-symbols-outlined text-primary flex-shrink-0" style="font-variation-settings:'FILL' 1;">info</span>
+        <div>
+          <p class="text-sm font-bold text-on-primary-fixed mb-1">Role Assignment Notice</p>
+          <p class="text-xs text-on-primary-fixed/80 leading-relaxed">This account will be created with the selected role. Users cannot change their own role. Accounts are automatically locked after 3 consecutive failed login attempts. Only an Admin can unlock locked accounts.</p>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex gap-3">
+        <a href="{{ url_for('admin_bp.list_users') }}" class="flex-1 py-3 text-center border border-outline-variant rounded-xl text-sm font-semibold hover:bg-surface-container transition-colors">Cancel</a>
+        <button type="submit" class="flex-1 py-3 bg-gradient-to-r from-primary to-primary-container text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-95">
+          <span class="material-symbols-outlined text-sm">person_add</span> Create Account
+        </button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<script src="{{ url_for('static', filename='js/vitalis.js') }}" defer></script>
+<script>
+function selectRole(card, role) {
+  document.querySelectorAll('.role-card').forEach(c => {
+    c.classList.remove('selected');
+    c.querySelector('input').checked = false;
+  });
+  card.classList.add('selected');
+  card.querySelector('input').checked = true;
+}
+
+function toggleVis(inputId, iconId) {
+  const input = document.getElementById(inputId);
+  const icon = document.getElementById(iconId);
+  if (input.type === 'password') { input.type = 'text'; icon.textContent = 'visibility_off'; }
+  else { input.type = 'password'; icon.textContent = 'visibility'; }
+}
+
+function checkStrength() {
+  const val = document.getElementById('password').value;
+  const checks = {
+    len: val.length >= 8,
+    upper: /[A-Z]/.test(val),
+    lower: /[a-z]/.test(val),
+    num: /[0-9]/.test(val),
+    special: /[!@#$%^&*]/.test(val),
+  };
+  Object.entries(checks).forEach(([key, met]) => {
+    const el = document.getElementById('req-' + key);
+    if (!el) return;
+    el.classList.toggle('met', met);
+    el.querySelector('.req-icon').textContent = met ? 'check_circle' : 'radio_button_unchecked';
+  });
+  const score = Object.values(checks).filter(Boolean).length;
+  const colors = ['','#ba1a1a','#f59e0b','#22c55e','#00524f'];
+  const labels = ['','Weak','Fair','Good','Strong'];
+  const bars = ['s1','s2','s3','s4'];
+  bars.forEach((id, i) => {
+    document.getElementById(id).style.background = i < score ? colors[score] : '#e1e3e4';
+  });
+  document.getElementById('strengthLabel').textContent = score > 0 ? labels[score] || 'Strong' : 'Enter a password';
+  document.getElementById('strengthLabel').style.color = colors[score] || '#727783';
+}
+
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  let ok = true;
+  const name = document.getElementById('fullName').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const pw = document.getElementById('password').value;
+  const cpw = document.getElementById('confirmPassword').value;
+
+  document.getElementById('nameErr').classList.toggle('hidden', !!name);
+  document.getElementById('emailErr').classList.toggle('hidden', !!(email && email.includes('@')));
+  document.getElementById('matchErr').classList.toggle('hidden', pw === cpw);
+
+  if (!name || !email || !email.includes('@') || pw !== cpw) ok = false;
+  if (ok) alert('Account created successfully! (Demo mode — no backend connected)');
+});
+</script>
+</body>
+</html>

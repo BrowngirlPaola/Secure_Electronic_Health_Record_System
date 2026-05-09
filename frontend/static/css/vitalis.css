@@ -1,0 +1,271 @@
+/* ============================================================
+   Vitalis EHR — Shared Design System
+   Design Language: Clinical Precision & Tonal Depth
+   Font: Inter | Icons: Material Symbols
+   Primary: #00488d | Tertiary: #00524f
+   ============================================================ */
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8f9fa;
+  color: #191c1d;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---------- Material Symbols ---------- */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ---------- Elevation / Depth ---------- */
+/* Ambient tonal shadow — no harsh borders */
+.tonal-shadow { box-shadow: 0 12px 40px rgba(0, 72, 141, 0.06); }
+.tonal-shadow-sm { box-shadow: 0 4px 16px rgba(0, 72, 141, 0.05); }
+.tonal-shadow-lg { box-shadow: 0 24px 64px rgba(0, 72, 141, 0.09); }
+
+/* ---------- Glassmorphism ---------- */
+.glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.78);
+}
+.glass-panel {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(248, 249, 250, 0.85);
+}
+
+/* ---------- Input Fields (bottom-stroke style) ---------- */
+.input-field {
+  width: 100%;
+  background: #e1e3e4;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0.5rem 0.5rem 0 0;
+  padding: 0.75rem 2.75rem 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  transition: border-color 0.2s ease;
+  color: #191c1d;
+}
+.input-field:focus { border-bottom-color: #00488d; }
+.input-field::placeholder { color: #727783; }
+.input-field:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Encrypted textarea fields */
+.enc-field {
+  width: 100%;
+  background: #e1e3e4;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0.5rem 0.5rem 0 0;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+  color: #191c1d;
+}
+.enc-field:focus { border-bottom-color: #00488d; }
+select.enc-field { resize: none; cursor: pointer; }
+
+/* ---------- Focus States (Accessibility — WCAG AA) ---------- */
+:focus-visible {
+  outline: 3px solid #00488d;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+button:focus-visible, a:focus-visible, input:focus-visible,
+select:focus-visible, textarea:focus-visible {
+  outline: 3px solid #00488d;
+  outline-offset: 2px;
+}
+
+/* ---------- Cursor ---------- */
+button, a, [role="button"],
+label[for], select, .clickable {
+  cursor: pointer;
+}
+[disabled], [aria-disabled="true"] { cursor: not-allowed; }
+
+/* ---------- Transitions (150-300ms micro-interactions) ---------- */
+.transition-fast { transition: all 0.15s ease; }
+.transition-std  { transition: all 0.2s ease; }
+.transition-slow { transition: all 0.3s ease; }
+
+/* ---------- Reduced Motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Sidebar Navigation ---------- */
+.sidebar {
+  position: fixed;
+  left: 0; top: 0;
+  height: 100%;
+  width: 16rem; /* 256px / w-64 */
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f9fa;
+  border-right: 1px solid rgba(203, 213, 225, 0.5);
+  z-index: 40;
+  padding-top: 5rem; /* pt-20 — below fixed header */
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #475569;
+  border-radius: 0.5rem;
+  transition: background-color 0.15s, color 0.15s;
+  text-decoration: none;
+  cursor: pointer;
+}
+.nav-link:hover { background-color: #f1f5f9; color: #191c1d; }
+.nav-link.active {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border-right: 4px solid #2563eb;
+  border-radius: 0.5rem 0 0 0.5rem;
+  transform: translateX(0.25rem);
+  font-weight: 600;
+}
+.nav-link-danger { color: #ba1a1a !important; }
+.nav-link-danger:hover { background-color: rgba(186, 26, 26, 0.05) !important; }
+
+/* ---------- Status Chips ---------- */
+.chip { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.1875rem 0.625rem; border-radius: 9999px; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.chip-stable    { background: #92f3ed; color: #00504d; }
+.chip-critical  { background: #ffdad6; color: #93000a; }
+.chip-moderate  { background: #d6e4f7; color: #586676; }
+.chip-info      { background: #d6e4f7; color: #3b4857; }
+.chip-suspicious { background: #fef9c3; color: #92400e; }
+
+/* ---------- Role Badges ---------- */
+.role-badge { display: inline-block; padding: 0.1875rem 0.5rem; border-radius: 9999px; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+.role-admin    { background: #d6e3ff; color: #00468b; }
+.role-doctor   { background: #d6e3ff; color: #00468b; }
+.role-nurse    { background: #92f3ed; color: #00504d; }
+.role-lab-tech { background: #fef9c3; color: #92400e; }
+.role-patient  { background: #d6e4f7; color: #586676; }
+
+/* ---------- Hex / Code Dump (Encryption Proof) ---------- */
+.hex-dump {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.6875rem;
+  background: #191c1d;
+  color: #92f3ed;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  word-break: break-all;
+  line-height: 1.7;
+}
+
+/* ---------- Alert / Flash messages ---------- */
+.alert { display: none; }
+.alert.show { display: flex; }
+.alert-error {
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(255, 218, 214, 0.4);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(186, 26, 26, 0.2);
+}
+.alert-locked {
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(255, 218, 214, 0.6);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(186, 26, 26, 0.3);
+}
+.alert-success {
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(146, 243, 237, 0.3);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(0, 82, 79, 0.2);
+}
+
+/* ---------- Data Tables ---------- */
+/* No vertical lines — generous horizontal spacing */
+.data-table { width: 100%; text-align: left; border-collapse: collapse; }
+.data-table thead tr { font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #424752; }
+.data-table thead th { padding: 1rem 1.75rem; }
+.data-table tbody tr { border-bottom: 1px solid #f3f4f5; transition: background-color 0.15s; cursor: default; }
+.data-table tbody tr:hover { background-color: rgba(243, 244, 245, 0.7); }
+.data-table tbody td { padding: 1rem 1.75rem; font-size: 0.875rem; color: #191c1d; }
+.data-table tbody tr.zebra { background-color: rgba(243, 244, 245, 0.3); }
+
+/* ---------- Password Strength Indicator ---------- */
+.strength-bar { height: 4px; border-radius: 2px; background: #e1e3e4; transition: background 0.3s ease; }
+.strength-bar.weak   { background: #ba1a1a; width: 33%; }
+.strength-bar.medium { background: #f59e0b; width: 66%; }
+.strength-bar.strong { background: #00524f; width: 100%; }
+
+/* ---------- Role Selection Cards (Register) ---------- */
+.role-card {
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  transition: all 0.2s ease;
+  background: #f3f4f5;
+}
+.role-card:hover  { border-color: #c2c6d4; background: #fff; }
+.role-card.selected { border-color: #00488d; background: #d6e3ff; }
+
+/* ---------- Print Styles ---------- */
+@media print {
+  .sidebar, header, nav, .no-print { display: none !important; }
+  main { margin-left: 0 !important; padding-top: 0 !important; }
+  body { background: white; color: black; }
+  .tonal-shadow { box-shadow: none; }
+}
+
+/* ---------- Scrollbar (subtle) ---------- */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c2c6d4; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #727783; }
+
+/* ---------- Blob decorative shape ---------- */
+.blob { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+
+/* ---------- Skip to main content (a11y) ---------- */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 9999;
+  padding: 0.5rem 1rem;
+  background: #00488d;
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0 0 0.5rem 0.5rem;
+  text-decoration: none;
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 0; }

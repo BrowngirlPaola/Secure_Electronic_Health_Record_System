@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>View Record | Vitalis EHR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        "primary":"#00488d","primary-container":"#005fb8","on-primary":"#ffffff","on-primary-container":"#cadcff",
+        "primary-fixed":"#d6e3ff","on-primary-fixed":"#001b3d","on-primary-fixed-variant":"#00468b",
+        "secondary":"#53606f","secondary-container":"#d6e4f7","on-secondary-container":"#586676",
+        "tertiary":"#00524f","tertiary-container":"#006c69","on-tertiary":"#ffffff",
+        "tertiary-fixed":"#92f3ed","on-tertiary-fixed":"#00201f","on-tertiary-fixed-variant":"#00504d",
+        "error":"#ba1a1a","error-container":"#ffdad6","on-error":"#ffffff","on-error-container":"#93000a",
+        "surface":"#f8f9fa","surface-container-lowest":"#ffffff","surface-container-low":"#f3f4f5",
+        "surface-container":"#edeeef","surface-container-high":"#e7e8e9","surface-container-highest":"#e1e3e4",
+        "on-surface":"#191c1d","on-surface-variant":"#424752","outline":"#727783","outline-variant":"#c2c6d4",
+      },
+      fontFamily:{"sans":["Inter","sans-serif"]}
+    }
+  }
+}
+</script>
+<style>
+  body{font-family:'Inter',sans-serif;}
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
+  .glass-panel{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);background:rgba(248,249,250,0.85);}
+  .tonal-shadow{box-shadow:0 12px 40px rgba(0,72,141,0.06);}
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/vitalis.css') }}"/>
+</head>
+<body class="bg-surface text-on-surface antialiased overflow-x-hidden">
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- TopAppBar -->
+<header class="fixed top-0 z-50 w-full glass-panel shadow-sm shadow-blue-900/5 flex justify-between items-center px-6 py-3">
+  <div class="flex items-center gap-6">
+    <span class="text-lg font-black tracking-tighter text-blue-900 pl-64">Vitalis EHR</span>
+  </div>
+  <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white text-xs font-bold">{{ user.full_name[:2]|upper }}</div>
+      <div class="hidden md:block text-right">
+        <p class="text-xs font-bold text-on-surface">{{ user.full_name }}</p>
+        <p class="text-[10px] text-secondary">{{ user.role|replace('_',' ')|title }}</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Sidebar -->
+<aside class="fixed left-0 top-0 h-full w-64 flex flex-col bg-slate-50 border-r border-slate-200/50 z-40 pt-20">
+  <div class="px-6 mb-6">
+    <div class="flex items-center gap-3 mb-5">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">health_and_safety</span>
+      </div>
+      <div>
+        <h2 class="text-sm font-black text-blue-900 leading-tight">Vitalis EHR</h2>
+        <p class="text-[10px] uppercase tracking-widest text-secondary font-bold">{{ user.role|replace('_',' ')|title }}</p>
+      </div>
+    </div>
+  </div>
+  <nav class="flex-1 px-3 space-y-0.5">
+    {% if user.role == 'admin' %}
+    <a href="{{ url_for('dashboard_bp.admin_dashboard') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">dashboard</span> Dashboard</a>
+    <a href="{{ url_for('admin_bp.list_users') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">group</span> User Management</a>
+    <a href="{{ url_for('admin_bp.assignments') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">assignment_ind</span> Assignments</a>
+    <a href="{{ url_for('records_bp.list_records') }}" class="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 border-r-4 border-blue-600 font-medium text-sm translate-x-1 rounded-l-lg"><span class="material-symbols-outlined text-sm">folder_shared</span> Health Records</a>
+    <a href="{{ url_for('admin_bp.audit_logs') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">policy</span> Audit Logs</a>
+    <a href="{{ url_for('admin_bp.audit_integrity') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">verified_user</span> Audit Integrity</a>
+    {% elif user.role == 'doctor' %}
+    <a href="{{ url_for('dashboard_bp.doctor_dashboard') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">dashboard</span> Dashboard</a>
+    <a href="{{ url_for('records_bp.list_records') }}" class="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 border-r-4 border-blue-600 font-medium text-sm translate-x-1 rounded-l-lg"><span class="material-symbols-outlined text-sm">folder_shared</span> Health Records</a>
+    <a href="{{ url_for('records_bp.new_record') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">note_add</span> New Record</a>
+    {% elif user.role == 'nurse' %}
+    <a href="{{ url_for('dashboard_bp.nurse_dashboard') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">dashboard</span> Dashboard</a>
+    <a href="{{ url_for('records_bp.list_records') }}" class="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 border-r-4 border-blue-600 font-medium text-sm translate-x-1 rounded-l-lg"><span class="material-symbols-outlined text-sm">folder_shared</span> Health Records</a>
+    {% elif user.role == 'patient' %}
+    <a href="{{ url_for('dashboard_bp.patient_dashboard') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">dashboard</span> Dashboard</a>
+    {% endif %}
+    <a href="{{ url_for('api_bp.encryption_proof') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">lock</span> Encryption Proof</a>
+  </nav>
+  <div class="px-3 py-4 border-t border-slate-100">
+    <a href="{{ url_for('auth_bp.logout') }}" class="flex items-center gap-3 px-4 py-2 text-error hover:bg-error/5 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">logout</span> Logout</a>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main id="main-content" class="ml-64 pt-20 px-8 pb-12 min-h-screen">
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="mb-6 space-y-3">
+    {% for category, message in messages %}
+    <div class="flex items-center gap-3 p-4 rounded-xl border
+      {% if category == 'error' %}bg-red-50 border-red-200 text-red-800
+      {% elif category == 'success' %}bg-emerald-50 border-emerald-200 text-emerald-800
+      {% else %}bg-amber-50 border-amber-200 text-amber-800{% endif %}">
+      <span class="material-symbols-outlined text-sm">{% if category == 'error' %}error{% elif category == 'success' %}check_circle{% else %}warning{% endif %}</span>
+      <span class="text-sm font-medium">{{ message }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  <!-- Page Header -->
+  <header class="flex justify-between items-end mb-8">
+    <div>
+      <span class="text-[11px] font-bold text-tertiary uppercase tracking-widest mb-1 block">Health Record Detail</span>
+      <h1 class="text-3xl font-black tracking-tight text-on-surface">Patient Record</h1>
+      <p class="text-sm text-secondary mt-1">Record ID: <span class="font-mono text-xs">{{ record.id }}</span></p>
+    </div>
+    <div class="flex gap-3">
+      {% if record.signature %}
+      <a href="{{ url_for('records_bp.verify_record_signature', record_id=record.id) }}" class="px-5 py-2.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-emerald-100 transition-colors">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">verified</span> Verify Signature
+      </a>
+      {% endif %}
+      {% if user.role == 'admin' %}
+      <form method="POST" action="{{ url_for('records_bp.delete_record', record_id=record.id) }}" onsubmit="return confirm('Are you sure you want to delete this record?');">
+        <button type="submit" class="px-5 py-2.5 bg-error-container text-on-error-container rounded-xl text-sm font-semibold flex items-center gap-2 hover:opacity-90 transition-opacity">
+          <span class="material-symbols-outlined text-base">delete</span> Delete
+        </button>
+      </form>
+      {% endif %}
+    </div>
+  </header>
+
+  <!-- Patient Info Card -->
+  <div class="bg-surface-container-lowest rounded-2xl p-7 tonal-shadow mb-6">
+    <div class="flex items-center gap-4">
+      <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white text-lg font-bold">
+        {% if record.users %}{{ record.users.full_name[:2]|upper }}{% else %}??{% endif %}
+      </div>
+      <div>
+        <h2 class="text-xl font-bold text-on-surface">{% if record.users %}{{ record.users.full_name }}{% else %}Unknown Patient{% endif %}</h2>
+        <p class="text-sm text-secondary">{% if record.users %}{{ record.users.email }}{% endif %}</p>
+      </div>
+      <div class="ml-auto text-right">
+        <p class="text-xs text-secondary">Created</p>
+        <p class="text-sm font-medium">{{ record.created_at[:19] if record.created_at else 'N/A' }}</p>
+      </div>
+    </div>
+    {% if record.signature %}
+    <div class="mt-4 flex items-center gap-2 text-emerald-700 bg-emerald-50 px-4 py-2 rounded-lg">
+      <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">verified</span>
+      <span class="text-xs font-bold">Digitally Signed ({{ record.signature_algorithm or 'RSA-SHA256' }})</span>
+    </div>
+    {% endif %}
+    {% if record.lab_signed_by %}
+    <div class="mt-2 flex items-center gap-2 text-blue-700 bg-blue-50 px-4 py-2 rounded-lg">
+      <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">biotech</span>
+      <span class="text-xs font-bold">Lab Results Signed &mdash; Chain of Custody Verified</span>
+      <span class="text-xs text-blue-500 ml-2">{{ record.lab_signed_at[:19] if record.lab_signed_at else '' }}</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Clinical Fields -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- Diagnosis -->
+    <div class="bg-surface-container-lowest rounded-2xl p-7 tonal-shadow">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="material-symbols-outlined text-primary text-base" style="font-variation-settings:'FILL' 1;">diagnosis</span>
+        <h3 class="text-xs font-bold text-secondary uppercase tracking-widest">Diagnosis</h3>
+        {% if record.diagnosis and record.diagnosis.startswith('[RESTRICTED') %}
+        <span class="ml-auto px-2 py-0.5 rounded-full text-[10px] bg-error-container text-on-error-container font-bold">RESTRICTED</span>
+        {% elif record.diagnosis and record.diagnosis.startswith('[MASKED') %}
+        <span class="ml-auto px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-800 font-bold">MASKED</span>
+        {% endif %}
+      </div>
+      <p class="text-sm leading-relaxed {% if record.diagnosis and (record.diagnosis.startswith('[RESTRICTED') or record.diagnosis.startswith('[MASKED')) %}text-on-surface-variant italic{% else %}text-on-surface{% endif %}">
+        {{ record.diagnosis or 'No data' }}
+      </p>
+    </div>
+
+    <!-- Treatment -->
+    <div class="bg-surface-container-lowest rounded-2xl p-7 tonal-shadow">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="material-symbols-outlined text-tertiary text-base" style="font-variation-settings:'FILL' 1;">medication</span>
+        <h3 class="text-xs font-bold text-secondary uppercase tracking-widest">Treatment</h3>
+        {% if record.treatment and record.treatment.startswith('[RESTRICTED') %}
+        <span class="ml-auto px-2 py-0.5 rounded-full text-[10px] bg-error-container text-on-error-container font-bold">RESTRICTED</span>
+        {% elif record.treatment and record.treatment.startswith('[MASKED') %}
+        <span class="ml-auto px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-800 font-bold">MASKED</span>
+        {% endif %}
+      </div>
+      <p class="text-sm leading-relaxed {% if record.treatment and (record.treatment.startswith('[RESTRICTED') or record.treatment.startswith('[MASKED')) %}text-on-surface-variant italic{% else %}text-on-surface{% endif %}">
+        {{ record.treatment or 'No data' }}
+      </p>
+    </div>
+
+    <!-- Lab Results -->
+    <div class="bg-surface-container-lowest rounded-2xl p-7 tonal-shadow">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="material-symbols-outlined text-amber-600 text-base" style="font-variation-settings:'FILL' 1;">biotech</span>
+        <h3 class="text-xs font-bold text-secondary uppercase tracking-widest">Lab Results</h3>
+        {% if record.lab_results and record.lab_results.startswith('[RESTRICTED') %}
+        <span class="ml-auto px-2 py-0.5 rounded-full text-[10px] bg-error-container text-on-error-container font-bold">RESTRICTED</span>
+        {% elif record.lab_results and record.lab_results.startswith('[SUMMARY') %}
+        <span class="ml-auto px-2 py-0.5 rounded-full text-[10px] bg-blue-100 text-blue-800 font-bold">SUMMARY</span>
+        {% endif %}
+      </div>
+      <p class="text-sm leading-relaxed {% if record.lab_results and (record.lab_results.startswith('[RESTRICTED') or record.lab_results.startswith('[SUMMARY')) %}text-on-surface-variant italic{% else %}text-on-surface{% endif %}">
+        {{ record.lab_results or 'Pending' }}
+      </p>
+    </div>
+
+    <!-- Notes -->
+    <div class="bg-surface-container-lowest rounded-2xl p-7 tonal-shadow">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings:'FILL' 1;">clinical_notes</span>
+        <h3 class="text-xs font-bold text-secondary uppercase tracking-widest">Clinical Notes</h3>
+        {% if record.notes and record.notes.startswith('[RESTRICTED') %}
+        <span class="ml-auto px-2 py-0.5 rounded-full text-[10px] bg-error-container text-on-error-container font-bold">RESTRICTED</span>
+        {% elif record.notes and record.notes.startswith('[HIDDEN') %}
+        <span class="ml-auto px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-600 font-bold">HIDDEN</span>
+        {% endif %}
+      </div>
+      <p class="text-sm leading-relaxed {% if record.notes and (record.notes.startswith('[RESTRICTED') or record.notes.startswith('[HIDDEN')) %}text-on-surface-variant italic{% else %}text-on-surface{% endif %}">
+        {{ record.notes or 'No notes' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- FLAC Notice -->
+  <div class="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
+    <span class="material-symbols-outlined text-blue-600 text-sm mt-0.5" style="font-variation-settings:'FILL' 1;">info</span>
+    <div>
+      <p class="text-xs font-bold text-blue-800">Field-Level Access Control (FLAC) Active</p>
+      <p class="text-xs text-blue-600 mt-1">Fields are displayed according to your role's access level. Some fields may be masked, summarized, or hidden based on the principle of least privilege.</p>
+    </div>
+  </div>
+
+</main>
+<script src="{{ url_for('static', filename='js/vitalis.js') }}" defer></script>
+</body>
+</html>

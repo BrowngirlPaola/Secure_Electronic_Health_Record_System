@@ -38,8 +38,8 @@ tailwind.config={theme:{extend:{colors:{
     <button class="p-2 rounded-full hover:bg-slate-200/50"><span class="material-symbols-outlined text-on-surface-variant">notifications</span></button>
     <div class="h-6 w-px bg-outline-variant/30 mx-1"></div>
     <div class="flex items-center gap-2">
-      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white text-xs font-bold">AD</div>
-      <div class="hidden md:block"><p class="text-xs font-bold">Administrator</p><p class="text-[10px] text-secondary">System Admin</p></div>
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white text-xs font-bold">{{ user.full_name[:2] | upper }}</div>
+      <div class="hidden md:block"><p class="text-xs font-bold">{{ user.full_name }}</p><p class="text-[10px] text-secondary">Administrator</p></div>
     </div>
   </div>
 </header>
@@ -65,7 +65,9 @@ tailwind.config={theme:{extend:{colors:{
     <a href="{{ url_for('admin_bp.assignments') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">assignment_ind</span> Assignments</a>
     <a href="{{ url_for('records_bp.list_records') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">folder_shared</span> Health Records</a>
     <a href="{{ url_for('admin_bp.audit_logs') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">policy</span> Audit Logs</a>
+    <a href="{{ url_for('admin_bp.audit_integrity') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">verified_user</span> Integrity Check</a>
     <a href="{{ url_for('admin_bp.suspicious_activity') }}" class="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 border-r-4 border-blue-600 text-sm font-medium translate-x-1 rounded-l-lg"><span class="material-symbols-outlined text-sm">warning</span> Suspicious Activity</a>
+    <a href="{{ url_for('admin_bp.btg_review') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">emergency</span> BTG Review</a>
     <a href="{{ url_for('api_bp.encryption_proof') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">lock</span> Encryption Proof</a>
   </nav>
   <div class="px-3 py-4 border-t border-slate-100">
@@ -75,26 +77,27 @@ tailwind.config={theme:{extend:{colors:{
 
 <main id="main-content" class="ml-64 pt-20 px-8 pb-12 min-h-screen">
 
-  <!-- Alert Banner -->
+  <!-- Alert Banner (only show if there are critical activities) -->
+  {% set critical_activities = activities | selectattr('severity', 'equalto', 'critical') | list %}
+  {% if critical_activities %}
   <div class="mb-6 p-4 bg-error-container/30 rounded-2xl border border-error/20 flex items-center gap-4">
     <span class="material-symbols-outlined text-error text-xl" style="font-variation-settings:'FILL' 1;">warning</span>
     <div class="flex-1">
-      <p class="font-bold text-on-error-container">2 active suspicious events detected. Review and investigate immediately.</p>
+      <p class="font-bold text-on-error-container">{{ critical_activities | length }} critical suspicious event{{ 's' if critical_activities | length != 1 else '' }} detected. Review and investigate immediately.</p>
     </div>
     <a href="{{ url_for('admin_bp.audit_logs') }}" class="px-4 py-2 bg-error text-white text-xs font-bold rounded-xl hover:opacity-90 transition-opacity">View Full Log</a>
   </div>
+  {% endif %}
 
   <header class="flex justify-between items-end mb-7">
     <div>
+      <span class="text-[11px] font-bold text-tertiary uppercase tracking-widest mb-1 block">SIEM-Inspired Detection</span>
       <h1 class="text-3xl font-black tracking-tight">Suspicious Activity Monitor</h1>
-      <p class="text-secondary text-sm mt-1">Rule-based anomaly detection — SIEM-inspired · Admin access only</p>
+      <p class="text-secondary text-sm mt-1">Rule-based anomaly detection · Honeypot triggers · Behavioral analysis</p>
     </div>
-    <div class="flex gap-3">
-      <button class="px-5 py-2.5 bg-surface-container-high rounded-xl text-sm font-semibold hover:bg-surface-container-highest transition-colors">Mark All Reviewed</button>
-      <button class="px-5 py-2.5 bg-gradient-to-r from-primary to-primary-container text-white rounded-xl text-sm font-semibold tonal-shadow flex items-center gap-2 hover:opacity-90 transition-opacity">
-        <span class="material-symbols-outlined text-base">download</span> Export Report
-      </button>
-    </div>
+    <a href="{{ url_for('admin_bp.audit_logs') }}" class="flex items-center gap-2 px-5 py-2.5 bg-surface-container-high rounded-xl text-sm font-semibold hover:bg-surface-container-highest transition-colors">
+      <span class="material-symbols-outlined text-base">policy</span> Full Audit Log
+    </a>
   </header>
 
   <!-- Detection Rules Status -->
@@ -112,175 +115,108 @@ tailwind.config={theme:{extend:{colors:{
         <span class="material-symbols-outlined text-primary text-base">location_on</span>
         <span class="text-xs font-bold uppercase tracking-wider">New IP Login</span>
       </div>
-      <p class="text-[10px] text-secondary mb-3">Login from new IP address</p>
+      <p class="text-[10px] text-secondary mb-3">Login from unfamiliar IP</p>
       <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant">ACTIVE</span>
     </div>
-    <div class="bg-error-container/20 rounded-2xl p-5">
+    <div class="bg-surface-container-lowest rounded-2xl p-5 tonal-shadow">
       <div class="flex items-center gap-2 mb-3">
-        <span class="material-symbols-outlined text-error text-base" style="font-variation-settings:'FILL' 1;">lock_person</span>
-        <span class="text-xs font-bold uppercase tracking-wider text-error">Brute Force</span>
+        <span class="material-symbols-outlined text-primary text-base">lock_person</span>
+        <span class="text-xs font-bold uppercase tracking-wider">Brute Force</span>
       </div>
       <p class="text-[10px] text-secondary mb-3">3+ failed logins same IP</p>
-      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-error-container text-on-error-container animate-pulse">🚨 TRIGGERED</span>
+      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant">ACTIVE</span>
     </div>
-    <div class="bg-amber-50 rounded-2xl p-5">
+    <div class="bg-surface-container-lowest rounded-2xl p-5 tonal-shadow">
       <div class="flex items-center gap-2 mb-3">
-        <span class="material-symbols-outlined text-amber-600 text-base" style="font-variation-settings:'FILL' 1;">gpp_bad</span>
-        <span class="text-xs font-bold uppercase tracking-wider text-amber-800">Unauth. Access</span>
+        <span class="material-symbols-outlined text-primary text-base">pest_control</span>
+        <span class="text-xs font-bold uppercase tracking-wider">Honeypot</span>
       </div>
-      <p class="text-[10px] text-secondary mb-3">Role-blocked access attempt</p>
-      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-200 text-amber-900">⚠️ TRIGGERED</span>
+      <p class="text-[10px] text-secondary mb-3">Canary record accessed</p>
+      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant">ACTIVE</span>
     </div>
   </div>
 
-  <!-- Suspicious Events Timeline -->
-  <h2 class="text-sm font-bold uppercase tracking-widest text-secondary mb-4">Active Events</h2>
-  <div class="space-y-4 mb-8">
+  <!-- Suspicious Events (Dynamic) -->
+  <h2 class="text-sm font-bold uppercase tracking-widest text-secondary mb-4">Detected Events ({{ activities | length }})</h2>
 
-    <!-- Event 1: Brute Force -->
-    <div class="bg-error-container/15 border border-error/20 rounded-2xl p-6">
+  {% if activities %}
+  <div class="space-y-4 mb-8">
+    {% for activity in activities %}
+    <div class="{% if activity.severity == 'critical' %}bg-error-container/15 border border-error/20{% elif activity.severity == 'warning' %}bg-amber-50 border border-amber-200{% else %}bg-surface-container-lowest border border-outline-variant/30{% endif %} rounded-2xl p-6">
       <div class="flex items-start justify-between mb-4">
         <div class="flex items-center gap-3">
-          <span class="material-symbols-outlined text-error text-2xl" style="font-variation-settings:'FILL' 1;">warning</span>
+          <span class="material-symbols-outlined text-2xl {% if activity.severity == 'critical' %}text-error{% elif activity.severity == 'warning' %}text-amber-600{% else %}text-primary{% endif %}" style="font-variation-settings:'FILL' 1;">
+            {% if activity.activity_type == 'honeypot_access' %}pest_control
+            {% elif activity.activity_type == 'rapid_login_failures' or activity.activity_type == 'brute_force' %}lock_person
+            {% elif activity.activity_type == 'unauthorized_access' %}gpp_bad
+            {% elif activity.activity_type == 'session_hijack' %}device_unknown
+            {% elif activity.activity_type == 'rapid_record_access' %}speed
+            {% else %}warning{% endif %}
+          </span>
           <div>
-            <span class="px-3 py-1 rounded-full text-xs font-black bg-error-container text-on-error-container uppercase">🚨 Brute Force Detected</span>
-            <p class="text-[10px] text-secondary mt-1">2025-05-06 13:54:31 – 13:55:02</p>
+            <span class="px-3 py-1 rounded-full text-xs font-black uppercase
+              {% if activity.severity == 'critical' %}bg-error-container text-on-error-container
+              {% elif activity.severity == 'warning' %}bg-amber-200 text-amber-900
+              {% else %}bg-secondary-container text-on-secondary-container{% endif %}">
+              {{ activity.activity_type | replace('_', ' ') | title }}
+            </span>
+            <p class="text-[10px] text-secondary mt-1">{{ activity.created_at[:19] | replace('T', ' ') if activity.created_at else 'N/A' }}</p>
           </div>
         </div>
-        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant">Account Locked ✓</span>
+        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold
+          {% if activity.severity == 'critical' %}bg-error-container text-on-error-container
+          {% elif activity.severity == 'warning' %}bg-amber-100 text-amber-800
+          {% else %}bg-tertiary-fixed text-on-tertiary-fixed-variant{% endif %}">
+          {{ activity.severity | upper }}
+        </span>
       </div>
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div class="bg-surface-container-lowest rounded-xl p-4">
           <p class="text-[10px] uppercase font-bold text-secondary mb-1">Source IP</p>
-          <p class="font-mono font-bold text-error">45.22.81.104</p>
+          <p class="font-mono font-bold {% if activity.severity == 'critical' %}text-error{% elif activity.severity == 'warning' %}text-amber-700{% else %}text-on-surface{% endif %}">
+            {{ activity.ip_address or 'Unknown' }}
+          </p>
         </div>
         <div class="bg-surface-container-lowest rounded-xl p-4">
-          <p class="text-[10px] uppercase font-bold text-secondary mb-1">Target Account</p>
-          <p class="font-semibold">chioma@vitalis.ehr</p>
+          <p class="text-[10px] uppercase font-bold text-secondary mb-1">Actor</p>
+          <p class="font-semibold">
+            {% if activity.users %}{{ activity.users.full_name }} ({{ activity.users.email }}){% else %}Unknown / Unauthenticated{% endif %}
+          </p>
         </div>
       </div>
-      <p class="text-sm text-on-surface leading-relaxed mb-4">3 consecutive failed login attempts detected from IP 45.22.81.104 within 90 seconds. Target account: Dr. Chioma Nweke. Account has been automatically locked following the brute force protection policy (3-attempt threshold).</p>
+
+      <p class="text-sm text-on-surface leading-relaxed mb-4">{{ activity.description }}</p>
+
       <div class="flex gap-3">
         <a href="{{ url_for('admin_bp.audit_logs') }}" class="px-4 py-2 border border-primary text-primary text-xs font-bold rounded-xl hover:bg-primary-fixed transition-colors">View Audit Trail</a>
-        <button class="px-4 py-2 bg-error text-white text-xs font-bold rounded-xl hover:opacity-90 transition-opacity" onclick="alert('IP block simulated. In production, this would update firewall rules. (Demo mode)')">Block IP</button>
-        <button class="px-4 py-2 border border-outline-variant text-secondary text-xs font-bold rounded-xl hover:bg-surface-container transition-colors" onclick="markResolved(this)">Mark Resolved</button>
       </div>
     </div>
-
-    <!-- Event 2: Unauthorized Access -->
-    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6">
-      <div class="flex items-start justify-between mb-4">
-        <div class="flex items-center gap-3">
-          <span class="material-symbols-outlined text-amber-600 text-2xl" style="font-variation-settings:'FILL' 1;">gpp_bad</span>
-          <div>
-            <span class="px-3 py-1 rounded-full text-xs font-black bg-amber-200 text-amber-900 uppercase">⚠️ Unauthorized Access Attempt</span>
-            <p class="text-[10px] text-secondary mt-1">2025-05-06 09:18:44</p>
-          </div>
-        </div>
-        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant">Access Denied ✓</span>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div class="bg-surface-container-lowest rounded-xl p-4">
-          <p class="text-[10px] uppercase font-bold text-secondary mb-1">Source IP</p>
-          <p class="font-mono font-bold text-amber-700">172.16.0.1</p>
-        </div>
-        <div class="bg-surface-container-lowest rounded-xl p-4">
-          <p class="text-[10px] uppercase font-bold text-secondary mb-1">Attempted Route</p>
-          <p class="font-semibold font-mono text-sm">/admin/audit-logs</p>
-        </div>
-      </div>
-      <p class="text-sm text-on-surface leading-relaxed mb-4">Unauthenticated session attempted to access a protected Admin-only route (/admin/audit-logs). HTTP 403 Forbidden was returned. User agent: Mozilla/5.0 (Windows NT 10.0). This may indicate a scanning attempt or unauthorized credential use.</p>
-      <div class="flex gap-3">
-        <a href="{{ url_for('admin_bp.audit_logs') }}" class="px-4 py-2 border border-primary text-primary text-xs font-bold rounded-xl hover:bg-primary-fixed transition-colors">View Details</a>
-        <button class="px-4 py-2 border border-outline-variant text-secondary text-xs font-bold rounded-xl hover:bg-surface-container transition-colors" onclick="markResolved(this)">Mark Resolved</button>
-      </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="bg-surface-container-lowest rounded-2xl tonal-shadow p-12 text-center mb-8">
+    <div class="flex flex-col items-center gap-3">
+      <span class="material-symbols-outlined text-4xl text-tertiary">verified_user</span>
+      <p class="text-lg font-bold text-on-surface">All Clear</p>
+      <p class="text-secondary text-sm">No suspicious activities detected. The detection engine is actively monitoring.</p>
     </div>
   </div>
-
-  <!-- Recent Detection History -->
-  <div class="bg-surface-container-lowest rounded-2xl tonal-shadow overflow-hidden">
-    <div class="px-6 py-4 bg-surface-container-low flex items-center justify-between">
-      <h3 class="font-bold text-sm">Detection History</h3>
-      <a href="{{ url_for('admin_bp.audit_logs') }}" class="text-[11px] font-bold text-primary uppercase tracking-wider hover:underline">Full Audit Log</a>
-    </div>
-    <table class="w-full text-left">
-      <thead>
-        <tr class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">
-          <th class="px-6 py-4">Time</th>
-          <th class="px-6 py-4">Rule Triggered</th>
-          <th class="px-6 py-4">Actor / IP</th>
-          <th class="px-6 py-4">Target</th>
-          <th class="px-6 py-4">Outcome</th>
-          <th class="px-6 py-4 text-right">Status</th>
-        </tr>
-      </thead>
-      <tbody class="text-sm divide-y divide-surface-container-low">
-        <tr class="bg-error-container/10 hover:bg-error-container/20 transition-colors">
-          <td class="px-6 py-4 text-secondary text-xs font-mono">2025-05-06 13:55</td>
-          <td class="px-6 py-4 text-error font-bold">Brute Force</td>
-          <td class="px-6 py-4 font-mono text-xs">45.22.81.104</td>
-          <td class="px-6 py-4">chioma@vitalis.ehr</td>
-          <td class="px-6 py-4">Account Locked</td>
-          <td class="px-6 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-error-container text-on-error-container">OPEN</span></td>
-        </tr>
-        <tr class="bg-amber-50 hover:bg-amber-100/50 transition-colors">
-          <td class="px-6 py-4 text-secondary text-xs font-mono">2025-05-06 09:18</td>
-          <td class="px-6 py-4 text-amber-700 font-bold">Unauthorized Access</td>
-          <td class="px-6 py-4 font-mono text-xs">172.16.0.1</td>
-          <td class="px-6 py-4">/admin/audit-logs</td>
-          <td class="px-6 py-4">403 Returned</td>
-          <td class="px-6 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">OPEN</span></td>
-        </tr>
-        <tr class="hover:bg-surface-container-low/40 transition-colors">
-          <td class="px-6 py-4 text-secondary text-xs font-mono">2025-05-04 16:42</td>
-          <td class="px-6 py-4 font-medium">New IP Login</td>
-          <td class="px-6 py-4 font-mono text-xs">10.15.22.8</td>
-          <td class="px-6 py-4">amara@vitalis.ehr</td>
-          <td class="px-6 py-4">Login Allowed</td>
-          <td class="px-6 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant">RESOLVED</span></td>
-        </tr>
-        <tr class="bg-surface-container-low/30 hover:bg-surface-container-low transition-colors">
-          <td class="px-6 py-4 text-secondary text-xs font-mono">2025-05-03 11:10</td>
-          <td class="px-6 py-4 font-medium">Rapid Record Access</td>
-          <td class="px-6 py-4 font-mono text-xs">192.168.1.15</td>
-          <td class="px-6 py-4">amara@vitalis.ehr</td>
-          <td class="px-6 py-4">Flagged &amp; Logged</td>
-          <td class="px-6 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant">RESOLVED</span></td>
-        </tr>
-        <tr class="hover:bg-surface-container-low/40 transition-colors">
-          <td class="px-6 py-4 text-secondary text-xs font-mono">2025-05-01 08:22</td>
-          <td class="px-6 py-4 font-medium">Brute Force</td>
-          <td class="px-6 py-4 font-mono text-xs">89.147.33.21</td>
-          <td class="px-6 py-4">ibrahim@vitalis.ehr</td>
-          <td class="px-6 py-4">Account Locked</td>
-          <td class="px-6 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant">RESOLVED</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  {% endif %}
 
   <!-- About Detection Engine -->
-  <div class="mt-6 bg-primary-fixed rounded-2xl p-7">
+  <div class="bg-primary-fixed rounded-2xl p-7">
     <h3 class="font-bold mb-3 text-on-primary-fixed-variant">About the Detection Engine</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-on-primary-fixed/80 leading-relaxed">
       <p><strong class="text-on-primary-fixed-variant">Rule 1 — Rapid Record Access:</strong> Triggered when a user views more than 10 records within a 2-minute window. May indicate data exfiltration.</p>
       <p><strong class="text-on-primary-fixed-variant">Rule 2 — New IP Login:</strong> Triggered when a user logs in from an IP address not previously associated with their account. May indicate credential compromise.</p>
       <p><strong class="text-on-primary-fixed-variant">Rule 3 — Brute Force:</strong> Triggered after 3+ consecutive failed login attempts from the same IP. Account is automatically locked per security policy.</p>
-      <p><strong class="text-on-primary-fixed-variant">Rule 4 — Unauthorized Access:</strong> Triggered when any access attempt is made to a route that the user's role does not permit. HTTP 403 is returned and the attempt is logged.</p>
+      <p><strong class="text-on-primary-fixed-variant">Rule 4 — Honeypot Access:</strong> Triggered when any user accesses a canary/honeypot record. Since no legitimate reason exists to view fake records, this indicates insider threat behavior (MITRE ATT&CK T1530).</p>
     </div>
-    <p class="text-xs text-on-primary-fixed/60 mt-4 italic">This detection engine uses rule-based logic only — no machine learning required. All events are logged in the audit trail with full metadata.</p>
+    <p class="text-xs text-on-primary-fixed/60 mt-4 italic">This detection engine uses rule-based logic only — no machine learning required. All events are logged in the cryptographic audit trail with full metadata and hash chain linkage.</p>
   </div>
 </main>
 
 <script src="{{ url_for('static', filename='js/vitalis.js') }}" defer></script>
-<script>
-function markResolved(btn) {
-  const card = btn.closest('.rounded-2xl');
-  const statusBadge = card.querySelector('[class*="Account Locked"], [class*="Access Denied"]');
-  btn.textContent = 'Resolved ✓';
-  btn.disabled = true;
-  btn.className = 'px-4 py-2 bg-tertiary-fixed text-on-tertiary-fixed-variant text-xs font-bold rounded-xl';
-}
-</script>
 </body>
 </html>

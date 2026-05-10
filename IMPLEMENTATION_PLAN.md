@@ -7,7 +7,7 @@
 
 ---
 
-## Current Status: Phase 5 COMPLETE — Moving to Phase 6 (Audit Logs & Suspicious Activity)
+## Current Status: Phase 6 COMPLETE — Moving to Phase 7 (Security Feature Pages)
 
 ---
 
@@ -159,15 +159,15 @@ Doctors currently see ALL patient records in the system. Per business requiremen
 
 ---
 
-## Phase 6: Audit Logs & Suspicious Activity (Dynamic)
+## Phase 6: Audit Logs & Suspicious Activity (Dynamic) (COMPLETE)
 
 ### Tasks
-- [ ] **6.1** `audit_logs.html` — Replace hardcoded table with loop over `{{ logs }}`
-- [ ] **6.2** Show severity badges (info=blue, warning=amber, critical=red)
-- [ ] **6.3** Show hash chain link indicators
-- [ ] **6.4** `suspicious.html` — Replace with loop over `{{ activities }}`
-- [ ] **6.5** Test: perform actions -> verify they appear in audit log with correct severity
-- [ ] **6.6** Commit & push
+- [x] **6.1** `audit_logs.html` — Replace hardcoded table with loop over `{{ logs }}`
+- [x] **6.2** Show severity badges (info=green, warning=amber, critical=red)
+- [x] **6.3** Show hash chain link indicators (chain_hash first 8 chars with link icon)
+- [x] **6.4** `suspicious.html` — Replace with loop over `{{ activities }}`
+- [x] **6.5** Test: perform actions -> verify they appear in audit log with correct severity
+- [x] **6.6** Commit & push
 
 ---
 
@@ -217,7 +217,7 @@ Doctors currently see ALL patient records in the system. Per business requiremen
 | 2026-05-10 | Phase 3 | Dynamic role dashboards — doctor, nurse, patient all data-driven | Complete |
 | 2026-05-10 | Phase 4 | Dynamic records list with role-conditional sidebar and actions | Complete |
 | 2026-05-10 | Phase 5 | Dynamic user management — real forms, 5 roles, delete/unlock actions | Complete |
-| | Phase 6 | Dynamic audit logs & suspicious activity | Pending |
+| 2026-05-10 | Phase 6 | Dynamic audit logs with hash chain indicators + suspicious activity monitor | Complete |
 | | Phase 7 | Verify & polish all 6 security features | Pending |
 | | Phase 8 | Login & landing page polish | Pending |
 | | Phase 9 | Full integration testing & defense prep | Pending |

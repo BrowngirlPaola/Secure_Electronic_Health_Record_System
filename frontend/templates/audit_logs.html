@@ -34,15 +34,15 @@ tailwind.config={theme:{extend:{colors:{
   <div class="flex items-center gap-6 pl-64">
     <div class="relative hidden md:block">
       <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
-      <input type="text" placeholder="Search by user, action, or IP..." class="bg-surface-container-highest border-none rounded-full py-2 pl-9 pr-4 w-72 text-sm focus:ring-2 focus:ring-primary/20 outline-none" oninput="filterLogs(this.value)"/>
+      <input type="text" id="searchInput" placeholder="Search by user, action, or IP..." class="bg-surface-container-highest border-none rounded-full py-2 pl-9 pr-4 w-72 text-sm focus:ring-2 focus:ring-primary/20 outline-none" oninput="filterLogs()"/>
     </div>
   </div>
   <div class="flex items-center gap-3">
     <button class="p-2 rounded-full hover:bg-slate-200/50"><span class="material-symbols-outlined text-on-surface-variant">notifications</span></button>
     <div class="h-6 w-px bg-outline-variant/30 mx-1"></div>
     <div class="flex items-center gap-2">
-      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white text-xs font-bold">AD</div>
-      <div class="hidden md:block"><p class="text-xs font-bold">Administrator</p><p class="text-[10px] text-secondary">System Admin</p></div>
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white text-xs font-bold">{{ user.full_name[:2] | upper }}</div>
+      <div class="hidden md:block"><p class="text-xs font-bold">{{ user.full_name }}</p><p class="text-[10px] text-secondary">Administrator</p></div>
     </div>
   </div>
 </header>
@@ -68,7 +68,9 @@ tailwind.config={theme:{extend:{colors:{
     <a href="{{ url_for('admin_bp.assignments') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">assignment_ind</span> Assignments</a>
     <a href="{{ url_for('records_bp.list_records') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">folder_shared</span> Health Records</a>
     <a href="{{ url_for('admin_bp.audit_logs') }}" class="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 border-r-4 border-blue-600 text-sm font-medium translate-x-1 rounded-l-lg"><span class="material-symbols-outlined text-sm">policy</span> Audit Logs</a>
+    <a href="{{ url_for('admin_bp.audit_integrity') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">verified_user</span> Integrity Check</a>
     <a href="{{ url_for('admin_bp.suspicious_activity') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">warning</span> Suspicious Activity</a>
+    <a href="{{ url_for('admin_bp.btg_review') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">emergency</span> BTG Review</a>
     <a href="{{ url_for('api_bp.encryption_proof') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">lock</span> Encryption Proof</a>
   </nav>
   <div class="px-3 py-4 border-t border-slate-100">
@@ -79,33 +81,35 @@ tailwind.config={theme:{extend:{colors:{
 <main id="main-content" class="ml-64 pt-20 px-8 pb-12 min-h-screen">
   <header class="flex justify-between items-end mb-7">
     <div>
+      <span class="text-[11px] font-bold text-tertiary uppercase tracking-widest mb-1 block">Cryptographic Audit Trail</span>
       <h1 class="text-3xl font-black tracking-tight">Audit Logs</h1>
-      <p class="text-secondary text-sm mt-1">Tamper-evident record of all system activity · Logs cannot be deleted through the UI</p>
+      <p class="text-secondary text-sm mt-1">Tamper-evident hash chain record of all system activity · Logs cannot be deleted</p>
     </div>
-    <div class="flex gap-3">
-      <button class="px-5 py-2.5 bg-surface-container-high rounded-xl text-sm font-semibold hover:bg-surface-container-highest transition-colors flex items-center gap-2">
-        <span class="material-symbols-outlined text-base">download</span> Export CSV
-      </button>
-    </div>
+    <a href="{{ url_for('admin_bp.audit_integrity') }}" class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary to-primary-container text-white rounded-xl text-sm font-semibold tonal-shadow hover:opacity-90 transition-opacity">
+      <span class="material-symbols-outlined text-base">verified_user</span> Verify Chain
+    </a>
   </header>
 
-  <!-- Stats -->
+  <!-- Stats (Dynamic) -->
+  {% set critical_count = logs | selectattr('severity', 'equalto', 'critical') | list | length %}
+  {% set warning_count = logs | selectattr('severity', 'equalto', 'warning') | list | length %}
+  {% set info_count = logs | selectattr('severity', 'equalto', 'info') | list | length %}
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     <div class="bg-surface-container-lowest rounded-2xl p-5 tonal-shadow">
-      <p class="text-2xl font-black text-on-surface">1,492</p>
+      <p class="text-2xl font-black text-on-surface">{{ logs | length }}</p>
       <p class="text-xs text-secondary mt-1">Total Log Entries</p>
     </div>
     <div class="bg-surface-container-lowest rounded-2xl p-5 tonal-shadow">
-      <p class="text-2xl font-black text-on-surface">47</p>
-      <p class="text-xs text-secondary mt-1">Today's Events</p>
-    </div>
-    <div class="bg-error-container/20 rounded-2xl p-5">
-      <p class="text-2xl font-black text-error">3</p>
-      <p class="text-xs text-secondary mt-1">Failed Logins Today</p>
+      <p class="text-2xl font-black text-on-surface">{{ info_count }}</p>
+      <p class="text-xs text-secondary mt-1">Info Events</p>
     </div>
     <div class="bg-amber-50 rounded-2xl p-5">
-      <p class="text-2xl font-black text-amber-700">2</p>
-      <p class="text-xs text-secondary mt-1">Suspicious Events</p>
+      <p class="text-2xl font-black text-amber-700">{{ warning_count }}</p>
+      <p class="text-xs text-secondary mt-1">Warning Events</p>
+    </div>
+    <div class="bg-error-container/20 rounded-2xl p-5">
+      <p class="text-2xl font-black text-error">{{ critical_count }}</p>
+      <p class="text-xs text-secondary mt-1">Critical Events</p>
     </div>
   </div>
 
@@ -113,157 +117,144 @@ tailwind.config={theme:{extend:{colors:{
   <div class="bg-surface-container-lowest rounded-2xl p-4 mb-5 tonal-shadow flex flex-wrap gap-3 items-center">
     <div class="relative flex-1 min-w-[180px]">
       <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
-      <input type="text" placeholder="Search by user, action, or IP..." class="w-full bg-surface-container-low border-none rounded-xl py-2 pl-9 pr-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none" oninput="filterLogs(this.value)"/>
+      <input type="text" id="filterSearch" placeholder="Search by user, action, or details..." class="w-full bg-surface-container-low border-none rounded-xl py-2 pl-9 pr-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none" oninput="filterLogs()"/>
     </div>
-    <select id="actionFilter" onchange="filterByAction()" class="bg-surface-container-low border-none rounded-xl py-2 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none">
-      <option value="">All Actions</option>
-      <option>LOGIN</option><option>LOGOUT</option>
-      <option>RECORD_VIEW</option><option>RECORD_CREATE</option>
-      <option>RECORD_DELETE</option><option>FAILED_LOGIN</option>
-      <option>UNAUTHORIZED_ACCESS</option>
+    <select id="severityFilter" onchange="filterLogs()" class="bg-surface-container-low border-none rounded-xl py-2 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none">
+      <option value="">All Severity</option>
+      <option value="info">Info</option>
+      <option value="warning">Warning</option>
+      <option value="critical">Critical</option>
     </select>
-    <select class="bg-surface-container-low border-none rounded-xl py-2 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none">
-      <option>Today</option><option>Last 7 Days</option><option>Last 30 Days</option><option>Custom</option>
+    <select id="actionFilter" onchange="filterLogs()" class="bg-surface-container-low border-none rounded-xl py-2 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none">
+      <option value="">All Actions</option>
+      <option value="LOGIN">LOGIN</option>
+      <option value="LOGOUT">LOGOUT</option>
+      <option value="RECORD_VIEW">RECORD_VIEW</option>
+      <option value="RECORD_CREATE">RECORD_CREATE</option>
+      <option value="RECORD_DELETE">RECORD_DELETE</option>
+      <option value="FAILED_LOGIN">FAILED_LOGIN</option>
+      <option value="ACCOUNT_LOCKED">ACCOUNT_LOCKED</option>
+      <option value="ACCOUNT_UNLOCKED">ACCOUNT_UNLOCKED</option>
+      <option value="USER_CREATED">USER_CREATED</option>
+      <option value="USER_DELETED">USER_DELETED</option>
+      <option value="UNAUTHORIZED_ACCESS">UNAUTHORIZED_ACCESS</option>
+      <option value="BTG_ACCESS">BTG_ACCESS</option>
+      <option value="HONEYPOT_ACCESS">HONEYPOT_ACCESS</option>
+      <option value="INTEGRITY_CHECK">INTEGRITY_CHECK</option>
     </select>
   </div>
 
-  <!-- Audit Table -->
+  <!-- Audit Table (Dynamic) -->
   <div class="bg-surface-container-lowest rounded-2xl tonal-shadow overflow-hidden">
     <div class="overflow-x-auto">
       <table class="w-full text-left" id="auditTable">
         <thead>
           <tr class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold bg-surface-container-low">
-            <th class="px-6 py-4">Timestamp</th>
-            <th class="px-6 py-4">User</th>
-            <th class="px-6 py-4">Action</th>
-            <th class="px-6 py-4">Record</th>
-            <th class="px-6 py-4">IP Address</th>
-            <th class="px-6 py-4 text-right">Risk Level</th>
+            <th class="px-5 py-4">Timestamp</th>
+            <th class="px-5 py-4">User</th>
+            <th class="px-5 py-4">Action</th>
+            <th class="px-5 py-4">Details</th>
+            <th class="px-5 py-4">IP Address</th>
+            <th class="px-5 py-4">Chain</th>
+            <th class="px-5 py-4 text-right">Severity</th>
           </tr>
         </thead>
-        <tbody class="text-sm divide-y divide-surface-container-low">
-          <tr class="hover:bg-surface-container-low/40 transition-colors">
-            <td class="px-6 py-4 text-secondary text-xs font-mono">2025-05-06 14:32:01</td>
-            <td class="px-6 py-4"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center text-[9px] font-bold text-on-primary-fixed-variant">AD</div> admin@vitalis.ehr</div></td>
-            <td class="px-6 py-4 font-medium">LOGIN</td>
-            <td class="px-6 py-4 text-secondary">—</td>
-            <td class="px-6 py-4 font-mono text-xs">192.168.1.1</td>
-            <td class="px-6 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant">LOW</span></td>
+        <tbody class="text-sm divide-y divide-surface-container-low" id="auditBody">
+          {% if logs %}
+          {% for log in logs %}
+          <tr class="{% if log.severity == 'critical' %}bg-error-container/10 hover:bg-error-container/20{% elif log.severity == 'warning' %}bg-amber-50/50 hover:bg-amber-50{% else %}hover:bg-surface-container-low/40{% endif %} transition-colors"
+              data-severity="{{ log.severity }}" data-action="{{ log.action }}">
+            <td class="px-5 py-4 text-secondary text-xs font-mono whitespace-nowrap">{{ log.created_at[:19] | replace('T', ' ') if log.created_at else 'N/A' }}</td>
+            <td class="px-5 py-4">
+              <div class="flex items-center gap-2">
+                {% if log.users %}
+                <div class="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold
+                  {% if log.users.role == 'admin' %}bg-surface-container-highest text-on-surface-variant
+                  {% elif log.users.role == 'doctor' %}bg-primary-fixed text-on-primary-fixed-variant
+                  {% elif log.users.role == 'nurse' %}bg-tertiary-fixed text-on-tertiary-fixed-variant
+                  {% elif log.users.role == 'lab_tech' %}bg-amber-50 text-amber-800
+                  {% else %}bg-secondary-container text-on-secondary-container{% endif %}">
+                  {{ log.users.full_name[:2] | upper }}
+                </div>
+                <span class="text-xs">{{ log.users.email }}</span>
+                {% else %}
+                <div class="w-6 h-6 rounded-full bg-error-container flex items-center justify-center text-[9px] font-bold text-on-error-container">?</div>
+                <span class="text-xs text-secondary italic">System / Unknown</span>
+                {% endif %}
+              </div>
+            </td>
+            <td class="px-5 py-4 font-medium text-xs
+              {% if log.severity == 'critical' %}text-error font-bold
+              {% elif log.severity == 'warning' %}text-amber-700 font-bold
+              {% else %}text-on-surface{% endif %}">
+              {{ log.action }}
+            </td>
+            <td class="px-5 py-4 text-secondary text-xs max-w-[250px] truncate" title="{{ log.details }}">
+              {{ log.details[:80] }}{% if log.details | length > 80 %}...{% endif %}
+            </td>
+            <td class="px-5 py-4 font-mono text-xs
+              {% if log.severity == 'critical' %}text-error font-bold{% else %}text-secondary{% endif %}">
+              {{ log.ip_address or '—' }}
+            </td>
+            <td class="px-5 py-4">
+              {% if log.chain_hash %}
+              <span class="inline-flex items-center gap-1 text-[9px] font-mono text-tertiary" title="{{ log.chain_hash }}">
+                <span class="material-symbols-outlined text-xs text-tertiary" style="font-variation-settings:'FILL' 1;">link</span>
+                {{ log.chain_hash[:8] }}
+              </span>
+              {% else %}
+              <span class="text-xs text-outline">—</span>
+              {% endif %}
+            </td>
+            <td class="px-5 py-4 text-right">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold
+                {% if log.severity == 'critical' %}bg-error-container text-on-error-container
+                {% elif log.severity == 'warning' %}bg-amber-100 text-amber-800
+                {% else %}bg-tertiary-fixed text-on-tertiary-fixed-variant{% endif %}">
+                {{ log.severity | upper }}
+              </span>
+            </td>
           </tr>
-          <tr class="bg-surface-container-low/30 hover:bg-surface-container-low transition-colors">
-            <td class="px-6 py-4 text-secondary text-xs font-mono">2025-05-06 14:28:15</td>
-            <td class="px-6 py-4"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center text-[9px] font-bold text-on-primary-fixed-variant">AM</div> amara@vitalis.ehr</div></td>
-            <td class="px-6 py-4 font-medium">RECORD_VIEW</td>
-            <td class="px-6 py-4 text-secondary">#007</td>
-            <td class="px-6 py-4 font-mono text-xs">192.168.1.15</td>
-            <td class="px-6 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-secondary-container text-on-secondary-container">INFO</span></td>
+          {% endfor %}
+          {% else %}
+          <tr>
+            <td colspan="7" class="px-6 py-12 text-center">
+              <div class="flex flex-col items-center gap-3">
+                <span class="material-symbols-outlined text-4xl text-outline-variant">policy</span>
+                <p class="text-secondary text-sm">No audit log entries yet. Actions will be recorded as users interact with the system.</p>
+              </div>
+            </td>
           </tr>
-          <tr class="hover:bg-surface-container-low/40 transition-colors">
-            <td class="px-6 py-4 text-secondary text-xs font-mono">2025-05-06 14:15:44</td>
-            <td class="px-6 py-4"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-tertiary-fixed flex items-center justify-center text-[9px] font-bold text-on-tertiary-fixed-variant">JP</div> jeanpaul@vitalis.ehr</div></td>
-            <td class="px-6 py-4 font-medium">RECORD_CREATE</td>
-            <td class="px-6 py-4 text-secondary">#008</td>
-            <td class="px-6 py-4 font-mono text-xs">192.168.1.22</td>
-            <td class="px-6 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-secondary-container text-on-secondary-container">INFO</span></td>
-          </tr>
-          <tr class="bg-error-container/15 hover:bg-error-container/25 transition-colors">
-            <td class="px-6 py-4 text-secondary text-xs font-mono">2025-05-06 13:55:02</td>
-            <td class="px-6 py-4"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-error-container flex items-center justify-center text-[9px] font-bold text-on-error-container">?</div> <span class="text-error font-bold">UNKNOWN</span></div></td>
-            <td class="px-6 py-4 text-error font-bold">FAILED_LOGIN</td>
-            <td class="px-6 py-4 text-secondary">—</td>
-            <td class="px-6 py-4 font-mono text-xs text-error font-bold">45.22.81.104</td>
-            <td class="px-6 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-error-container text-on-error-container">CRITICAL</span></td>
-          </tr>
-          <tr class="bg-error-container/10 hover:bg-error-container/20 transition-colors">
-            <td class="px-6 py-4 text-secondary text-xs font-mono">2025-05-06 13:54:48</td>
-            <td class="px-6 py-4"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-error-container flex items-center justify-center text-[9px] font-bold text-on-error-container">?</div> <span class="text-error font-bold">UNKNOWN</span></div></td>
-            <td class="px-6 py-4 text-error font-bold">FAILED_LOGIN</td>
-            <td class="px-6 py-4 text-secondary">—</td>
-            <td class="px-6 py-4 font-mono text-xs text-error">45.22.81.104</td>
-            <td class="px-6 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-error-container text-on-error-container">CRITICAL</span></td>
-          </tr>
-          <tr class="hover:bg-surface-container-low/40 transition-colors">
-            <td class="px-6 py-4 text-secondary text-xs font-mono">2025-05-06 13:54:31</td>
-            <td class="px-6 py-4"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-error-container flex items-center justify-center text-[9px] font-bold text-on-error-container">?</div> UNKNOWN</div></td>
-            <td class="px-6 py-4 font-medium text-amber-700">FAILED_LOGIN</td>
-            <td class="px-6 py-4 text-secondary">—</td>
-            <td class="px-6 py-4 font-mono text-xs">45.22.81.104</td>
-            <td class="px-6 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">HIGH</span></td>
-          </tr>
-          <tr class="bg-error-container/10 hover:bg-error-container/20 transition-colors">
-            <td class="px-6 py-4 text-secondary text-xs font-mono">2025-05-06 12:02:19</td>
-            <td class="px-6 py-4"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center text-[9px] font-bold text-on-primary-fixed-variant">CN</div> chioma@vitalis.ehr</div></td>
-            <td class="px-6 py-4 font-medium text-error">ACCOUNT_LOCKED</td>
-            <td class="px-6 py-4 text-secondary">—</td>
-            <td class="px-6 py-4 font-mono text-xs text-error">45.22.81.104</td>
-            <td class="px-6 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">HIGH</span></td>
-          </tr>
-          <tr class="bg-surface-container-low/30 hover:bg-surface-container-low transition-colors">
-            <td class="px-6 py-4 text-secondary text-xs font-mono">2025-05-06 11:45:33</td>
-            <td class="px-6 py-4"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center text-[9px] font-bold text-on-primary-fixed-variant">AM</div> amara@vitalis.ehr</div></td>
-            <td class="px-6 py-4 font-medium">RECORD_CREATE</td>
-            <td class="px-6 py-4 text-secondary">#007</td>
-            <td class="px-6 py-4 font-mono text-xs">192.168.1.15</td>
-            <td class="px-6 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-secondary-container text-on-secondary-container">INFO</span></td>
-          </tr>
-          <tr class="hover:bg-surface-container-low/40 transition-colors">
-            <td class="px-6 py-4 text-secondary text-xs font-mono">2025-05-06 10:30:22</td>
-            <td class="px-6 py-4"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center text-[9px] font-bold text-on-secondary-container">SM</div> sarah@vitalis.ehr</div></td>
-            <td class="px-6 py-4 font-medium">RECORD_VIEW</td>
-            <td class="px-6 py-4 text-secondary">#003</td>
-            <td class="px-6 py-4 font-mono text-xs">10.0.0.55</td>
-            <td class="px-6 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant">LOW</span></td>
-          </tr>
-          <tr class="bg-amber-50 hover:bg-amber-100/70 transition-colors">
-            <td class="px-6 py-4 text-secondary text-xs font-mono">2025-05-06 09:18:44</td>
-            <td class="px-6 py-4"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-amber-600 text-sm" style="font-variation-settings:'FILL' 1;">warning</span> <span class="font-bold text-amber-800">UNAUTHORIZED</span></div></td>
-            <td class="px-6 py-4 font-bold text-amber-800">UNAUTHORIZED_ACCESS</td>
-            <td class="px-6 py-4 text-secondary">—</td>
-            <td class="px-6 py-4 font-mono text-xs text-amber-700">172.16.0.1</td>
-            <td class="px-6 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">⚠️ SUSPICIOUS</span></td>
-          </tr>
-          <tr class="bg-surface-container-low/30 hover:bg-surface-container-low transition-colors">
-            <td class="px-6 py-4 text-secondary text-xs font-mono">2025-05-06 08:55:11</td>
-            <td class="px-6 py-4"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center text-[9px] font-bold text-on-primary-fixed-variant">AM</div> amara@vitalis.ehr</div></td>
-            <td class="px-6 py-4 font-medium">LOGIN</td>
-            <td class="px-6 py-4 text-secondary">—</td>
-            <td class="px-6 py-4 font-mono text-xs">192.168.1.15</td>
-            <td class="px-6 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant">LOW</span></td>
-          </tr>
-          <tr class="hover:bg-surface-container-low/40 transition-colors">
-            <td class="px-6 py-4 text-secondary text-xs font-mono">2025-05-05 23:41:02</td>
-            <td class="px-6 py-4"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center text-[9px] font-bold text-on-primary-fixed-variant">AD</div> admin@vitalis.ehr</div></td>
-            <td class="px-6 py-4 font-medium">RECORD_DELETE</td>
-            <td class="px-6 py-4 text-secondary">#002</td>
-            <td class="px-6 py-4 font-mono text-xs">192.168.1.1</td>
-            <td class="px-6 py-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-secondary-container text-on-secondary-container">INFO</span></td>
-          </tr>
+          {% endif %}
         </tbody>
       </table>
     </div>
+    {% if logs %}
     <div class="px-6 py-4 bg-surface-container-low flex items-center justify-between">
-      <p class="text-xs text-secondary">Showing 12 of 1,492 entries · Logs are tamper-evident and cannot be deleted</p>
-      <div class="flex gap-2">
-        <button class="px-3 py-1.5 rounded-lg bg-surface-container-highest text-xs font-semibold hover:bg-surface-container-high transition-colors">Previous</button>
-        <button class="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold">1</button>
-        <button class="px-3 py-1.5 rounded-lg bg-surface-container-highest text-xs font-semibold hover:bg-surface-container-high transition-colors">2</button>
-        <button class="px-3 py-1.5 rounded-lg bg-surface-container-highest text-xs font-semibold hover:bg-surface-container-high transition-colors">Next</button>
+      <p class="text-xs text-secondary">
+        Showing {{ logs | length }} entries · Logs are tamper-evident (SHA-256 hash chain) and cannot be deleted
+      </p>
+      <div class="flex items-center gap-2 text-xs text-secondary">
+        <span class="material-symbols-outlined text-sm text-tertiary" style="font-variation-settings:'FILL' 1;">link</span>
+        Hash chain linked
       </div>
     </div>
+    {% endif %}
   </div>
 </main>
+
 <script src="{{ url_for('static', filename='js/vitalis.js') }}" defer></script>
 <script>
-function filterLogs(query) {
-  const q = query.toLowerCase();
-  document.querySelectorAll('#auditTable tbody tr').forEach(row => {
-    row.style.display = q === '' || row.textContent.toLowerCase().includes(q) ? '' : 'none';
-  });
-}
-function filterByAction() {
-  const val = document.getElementById('actionFilter').value.toLowerCase();
-  document.querySelectorAll('#auditTable tbody tr').forEach(row => {
-    row.style.display = val === '' || row.textContent.toLowerCase().includes(val) ? '' : 'none';
+function filterLogs() {
+  const search = (document.getElementById('filterSearch') || document.getElementById('searchInput')).value.toLowerCase();
+  const severity = document.getElementById('severityFilter').value.toLowerCase();
+  const action = document.getElementById('actionFilter').value;
+  const rows = document.querySelectorAll('#auditBody tr[data-severity]');
+  rows.forEach(row => {
+    const matchSearch = !search || row.textContent.toLowerCase().includes(search);
+    const matchSeverity = !severity || row.dataset.severity === severity;
+    const matchAction = !action || row.dataset.action === action;
+    row.style.display = (matchSearch && matchSeverity && matchAction) ? '' : 'none';
   });
 }
 </script>

@@ -87,7 +87,7 @@ tailwind.config = {
           <p class="text-xs font-bold uppercase tracking-widest text-secondary">Encryption</p>
         </div>
         <div>
-          <p class="text-2xl font-black text-blue-900">4 Roles</p>
+          <p class="text-2xl font-black text-blue-900">5 Roles</p>
           <p class="text-xs font-bold uppercase tracking-widest text-secondary">RBAC</p>
         </div>
         <div>
@@ -129,7 +129,22 @@ tailwind.config = {
           <p class="text-sm text-secondary">Enter your authorized credentials to continue.</p>
         </div>
 
-        <!-- Error alerts -->
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="flex items-center gap-3 p-4 rounded-xl mb-5 border
+          {% if category == 'success' %}bg-emerald-50 border-emerald-200 text-emerald-800
+          {% elif category == 'error' %}bg-error-container/40 border-error/20 text-on-error-container
+          {% else %}bg-primary-fixed border-primary/20 text-on-primary-fixed-variant{% endif %}">
+          <span class="material-symbols-outlined text-sm">{% if category == 'success' %}check_circle{% elif category == 'error' %}error{% else %}info{% endif %}</span>
+          <p class="text-sm font-medium">{{ message }}</p>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- Error alerts (URL param driven) -->
         <div id="alert-invalid" class="alert items-center gap-3 p-4 bg-error-container/40 rounded-xl mb-5 border border-error/20">
           <span class="material-symbols-outlined text-error text-sm">error</span>
           <p class="text-sm text-on-error-container font-medium">Invalid email or password. Please try again.</p>

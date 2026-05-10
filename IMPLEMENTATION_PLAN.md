@@ -7,7 +7,7 @@
 
 ---
 
-## Current Status: Phase 7 COMPLETE — Moving to Phase 8 (Login & Landing Page Polish)
+## Current Status: Phase 8 COMPLETE — Moving to Phase 9 (Full Integration Testing)
 
 ---
 
@@ -185,13 +185,13 @@ Doctors currently see ALL patient records in the system. Per business requiremen
 
 ---
 
-## Phase 8: Login & Landing Page Polish
+## Phase 8: Login & Landing Page Polish (COMPLETE)
 
 ### Tasks
-- [ ] **8.1** `login.html` — Ensure error/locked flash messages display correctly
-- [ ] **8.2** `index.html` — Landing page with project description and login button
-- [ ] **8.3** `error.html` — Verify 403/404/500 pages render correctly with back links
-- [ ] **8.4** Commit & push
+- [x] **8.1** `login.html` — Flash messages support added, "5 Roles" stat updated, error/locked alerts working
+- [x] **8.2** `index.html` — Updated to 5 roles, added Lab Tech card, 6 innovative security features showcased, Patient Portal links fixed
+- [x] **8.3** `error.html` — Verified already dynamic (uses {{ code }}, {{ message }}, conditional icons)
+- [x] **8.4** Commit & push
 
 ---
 
@@ -219,7 +219,7 @@ Doctors currently see ALL patient records in the system. Per business requiremen
 | 2026-05-10 | Phase 5 | Dynamic user management — real forms, 5 roles, delete/unlock actions | Complete |
 | 2026-05-10 | Phase 6 | Dynamic audit logs with hash chain indicators + suspicious activity monitor | Complete |
 | 2026-05-10 | Phase 7 | Security feature pages verified + encryption proof made dynamic | Complete |
-| | Phase 8 | Login & landing page polish | Pending |
+| 2026-05-10 | Phase 8 | Login & landing page polish — 5 roles, 6 security features, flash messages | Complete |
 | | Phase 9 | Full integration testing & defense prep | Pending |
 
 ---

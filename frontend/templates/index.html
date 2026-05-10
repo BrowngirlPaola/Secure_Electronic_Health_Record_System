@@ -57,7 +57,7 @@ tailwind.config = {
     </div>
     <div class="flex gap-3 items-center">
       <a href="{{ url_for('auth_bp.login') }}" class="bg-gradient-to-r from-primary to-primary-container text-white px-5 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity">Staff Login</a>
-      <a href="{{ url_for('dashboard_bp.patient_dashboard') }}" class="bg-secondary-container text-on-secondary-container px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-surface-container transition-colors">Patient Portal</a>
+      <a href="{{ url_for('auth_bp.login') }}" class="bg-secondary-container text-on-secondary-container px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-surface-container transition-colors">Patient Portal</a>
     </div>
   </div>
 </nav>
@@ -85,11 +85,11 @@ tailwind.config = {
         </div>
         <div class="flex items-center gap-2 text-sm font-semibold text-on-surface">
           <div class="w-8 h-8 rounded-lg bg-tertiary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-on-tertiary-fixed-variant text-base">groups</span></div>
-          4 User Roles
+          5 User Roles
         </div>
         <div class="flex items-center gap-2 text-sm font-semibold text-on-surface">
-          <div class="w-8 h-8 rounded-lg bg-secondary-container flex items-center justify-center"><span class="material-symbols-outlined text-on-secondary-container text-base">policy</span></div>
-          Full Audit Log
+          <div class="w-8 h-8 rounded-lg bg-secondary-container flex items-center justify-center"><span class="material-symbols-outlined text-on-secondary-container text-base">security</span></div>
+          6 Security Layers
         </div>
       </div>
       <div class="flex flex-wrap gap-4">
@@ -168,7 +168,7 @@ tailwind.config = {
           <span class="material-symbols-outlined text-on-tertiary-fixed-variant" style="font-variation-settings:'FILL' 1;">groups</span>
         </div>
         <h3 class="font-bold text-base mb-2">Role-Based Access</h3>
-        <p class="text-sm text-secondary leading-relaxed">Admin, Doctor, Nurse, and Patient roles with strictly enforced least-privilege permissions.</p>
+        <p class="text-sm text-secondary leading-relaxed">Admin, Doctor, Nurse, Lab Technician, and Patient roles with strictly enforced least-privilege permissions.</p>
       </div>
       <div class="bg-surface-container-lowest p-7 rounded-2xl hover:-translate-y-1 transition-transform tonal-shadow">
         <div class="w-12 h-12 bg-secondary-container flex items-center justify-center rounded-xl mb-5">
@@ -196,7 +196,7 @@ tailwind.config = {
       <h2 class="text-3xl font-bold tracking-tight mb-4">Built for Every Clinical Role</h2>
       <p class="text-secondary max-w-2xl">Each role has precisely scoped permissions — users see exactly what they need, nothing more.</p>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
       <div class="bg-surface-container-low p-7 rounded-2xl">
         <div class="w-12 h-12 bg-gradient-to-br from-primary to-primary-container rounded-xl flex items-center justify-center mb-5">
           <span class="material-symbols-outlined text-white" style="font-variation-settings:'FILL' 1;">admin_panel_settings</span>
@@ -237,6 +237,19 @@ tailwind.config = {
         </ul>
       </div>
       <div class="bg-surface-container-low p-7 rounded-2xl">
+        <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mb-5">
+          <span class="material-symbols-outlined text-amber-700" style="font-variation-settings:'FILL' 1;">biotech</span>
+        </div>
+        <h3 class="font-bold text-base mb-3">Lab Technician</h3>
+        <ul class="space-y-2 text-sm text-secondary">
+          <li class="flex items-center gap-2"><span class="material-symbols-outlined text-tertiary text-sm">check</span>Submit lab results</li>
+          <li class="flex items-center gap-2"><span class="material-symbols-outlined text-tertiary text-sm">check</span>Digitally sign results</li>
+          <li class="flex items-center gap-2"><span class="material-symbols-outlined text-tertiary text-sm">check</span>View pending specimens</li>
+          <li class="flex items-center gap-2"><span class="material-symbols-outlined text-error text-sm">close</span>Cannot view diagnoses</li>
+          <li class="flex items-center gap-2"><span class="material-symbols-outlined text-error text-sm">close</span>Cannot access records</li>
+        </ul>
+      </div>
+      <div class="bg-surface-container-low p-7 rounded-2xl">
         <div class="w-12 h-12 bg-secondary-container rounded-xl flex items-center justify-center mb-5">
           <span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings:'FILL' 1;">person</span>
         </div>
@@ -263,19 +276,27 @@ tailwind.config = {
         <div class="space-y-6">
           <div class="flex gap-5">
             <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-primary text-base">lock</span></div>
-            <div><h4 class="font-bold mb-1">Encryption at Rest</h4><p class="text-sm text-secondary">Health record fields encrypted with AES-256-CBC. Unique IV per operation prevents pattern analysis. Database stores only ciphertext.</p></div>
+            <div><h4 class="font-bold mb-1">AES-256 Encryption + RSA Signatures</h4><p class="text-sm text-secondary">Every field encrypted at rest with unique IVs. Doctors digitally sign records with RSA-2048 for non-repudiation.</p></div>
           </div>
           <div class="flex gap-5">
-            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-on-tertiary-fixed-variant text-base">lock_person</span></div>
-            <div><h4 class="font-bold mb-1">Brute Force Lockout</h4><p class="text-sm text-secondary">Account automatically locked after 3 consecutive failed logins. All attempts logged with IP address.</p></div>
+            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-on-tertiary-fixed-variant text-base">link</span></div>
+            <div><h4 class="font-bold mb-1">Hash Chain Audit Integrity</h4><p class="text-sm text-secondary">Each audit log entry chains to the previous via SHA-256 hash. Tamper with one entry and the chain visibly breaks.</p></div>
           </div>
           <div class="flex gap-5">
-            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center"><span class="material-symbols-outlined text-on-secondary-container text-base">policy</span></div>
-            <div><h4 class="font-bold mb-1">IP Address Audit Logging</h4><p class="text-sm text-secondary">Every action recorded with actor identity, IP address, timestamp, and affected record ID.</p></div>
+            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center"><span class="material-symbols-outlined text-on-secondary-container text-base">pest_control</span></div>
+            <div><h4 class="font-bold mb-1">Honeypot / Canary Records</h4><p class="text-sm text-secondary">Fake patient records that trigger critical alerts when accessed — catching authorized insiders acting maliciously.</p></div>
           </div>
           <div class="flex gap-5">
-            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-error-container flex items-center justify-center"><span class="material-symbols-outlined text-on-error-container text-base">warning</span></div>
-            <div><h4 class="font-bold mb-1">Suspicious Activity Detection</h4><p class="text-sm text-secondary">Rule-based SIEM-inspired monitoring flags rapid record access, new IP logins, and unauthorized access attempts.</p></div>
+            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-error-container flex items-center justify-center"><span class="material-symbols-outlined text-on-error-container text-base">fingerprint</span></div>
+            <div><h4 class="font-bold mb-1">Session Fingerprinting</h4><p class="text-sm text-secondary">Browser fingerprints hashed on login. Mismatch mid-session = cookie theft detected → auto session kill.</p></div>
+          </div>
+          <div class="flex gap-5">
+            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-primary text-base">emergency</span></div>
+            <div><h4 class="font-bold mb-1">Break-the-Glass Protocol</h4><p class="text-sm text-secondary">Emergency access with justification required. Temporary 30-minute window, fully audited, admin-reviewed.</p></div>
+          </div>
+          <div class="flex gap-5">
+            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-on-tertiary-fixed-variant text-base">visibility_off</span></div>
+            <div><h4 class="font-bold mb-1">Field-Level Access Control</h4><p class="text-sm text-secondary">Not just who sees a record — but which fields. Nurses see treatment, not diagnosis. Lab techs see only lab results.</p></div>
           </div>
         </div>
       </div>
@@ -303,16 +324,28 @@ tailwind.config = {
             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant">ACTIVE</span>
           </div>
           <div class="flex items-center justify-between p-3 rounded-xl bg-surface-container-low">
-            <span class="text-sm font-medium">SQL Injection Prevention (ORM)</span>
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant">PROTECTED</span>
+            <span class="text-sm font-medium">Hash Chain Audit Integrity</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant">ACTIVE</span>
           </div>
           <div class="flex items-center justify-between p-3 rounded-xl bg-surface-container-low">
-            <span class="text-sm font-medium">Suspicious Activity Monitor</span>
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-fixed text-on-primary-fixed-variant">NEW FEATURE</span>
+            <span class="text-sm font-medium">RSA-2048 Digital Signatures</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant">ACTIVE</span>
           </div>
           <div class="flex items-center justify-between p-3 rounded-xl bg-surface-container-low">
-            <span class="text-sm font-medium">NIST Password Policy (SP 800-63B)</span>
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-fixed text-on-primary-fixed-variant">NEW FEATURE</span>
+            <span class="text-sm font-medium">Honeypot / Canary Records</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-fixed text-on-primary-fixed-variant">INNOVATIVE</span>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-xl bg-surface-container-low">
+            <span class="text-sm font-medium">Field-Level Access Control (FLAC)</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-fixed text-on-primary-fixed-variant">INNOVATIVE</span>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-xl bg-surface-container-low">
+            <span class="text-sm font-medium">Break-the-Glass Emergency Access</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-fixed text-on-primary-fixed-variant">INNOVATIVE</span>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-xl bg-surface-container-low">
+            <span class="text-sm font-medium">Session Fingerprinting</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-fixed text-on-primary-fixed-variant">INNOVATIVE</span>
           </div>
         </div>
       </div>
@@ -330,7 +363,7 @@ tailwind.config = {
       <p class="text-white/80 mb-10 max-w-xl mx-auto text-lg">Access the system as your designated role and experience enterprise-level EHR security in action.</p>
       <div class="flex flex-col sm:flex-row justify-center gap-4">
         <a href="{{ url_for('auth_bp.login') }}" class="bg-white text-primary px-10 py-4 rounded-2xl font-extrabold text-base hover:scale-105 transition-transform">Staff Login</a>
-        <a href="{{ url_for('dashboard_bp.patient_dashboard') }}" class="bg-white/20 border border-white/30 text-white px-10 py-4 rounded-2xl font-extrabold text-base hover:bg-white/30 transition-colors">Patient Portal</a>
+        <a href="{{ url_for('auth_bp.login') }}" class="bg-white/20 border border-white/30 text-white px-10 py-4 rounded-2xl font-extrabold text-base hover:bg-white/30 transition-colors">Patient Portal</a>
       </div>
     </div>
   </div>

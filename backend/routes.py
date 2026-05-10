@@ -610,7 +610,11 @@ def unlock_user(user_id):
                     f"Admin unlocked user {user_id}", "info")
 
     flash("Account unlocked successfully.", "success")
-    return redirect(url_for("dashboard_bp.admin_dashboard"))
+    # Redirect back to referrer (dashboard or users list)
+    next_page = request.form.get("next", "")
+    if next_page == "dashboard":
+        return redirect(url_for("dashboard_bp.admin_dashboard"))
+    return redirect(url_for("admin_bp.list_users"))
 
 
 @admin_bp.route("/audit-logs")

@@ -47,10 +47,10 @@ tailwind.config={theme:{extend:{colors:{
     <button class="p-2 rounded-full hover:bg-slate-200/50"><span class="material-symbols-outlined text-on-surface-variant">notifications</span></button>
     <div class="h-6 w-px bg-outline-variant/30 mx-1"></div>
     <div class="flex items-center gap-2">
-      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white text-xs font-bold">AD</div>
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white text-xs font-bold">{{ user.full_name[:2] | upper }}</div>
       <div class="hidden md:block">
-        <p class="text-xs font-bold">Administrator</p>
-        <p class="text-[10px] text-secondary">System Admin</p>
+        <p class="text-xs font-bold">{{ user.full_name }}</p>
+        <p class="text-[10px] text-secondary">Administrator</p>
       </div>
     </div>
   </div>
@@ -78,7 +78,9 @@ tailwind.config={theme:{extend:{colors:{
     <a href="{{ url_for('admin_bp.assignments') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">assignment_ind</span> Assignments</a>
     <a href="{{ url_for('records_bp.list_records') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">folder_shared</span> Health Records</a>
     <a href="{{ url_for('admin_bp.audit_logs') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">policy</span> Audit Logs</a>
+    <a href="{{ url_for('admin_bp.audit_integrity') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">verified_user</span> Integrity Check</a>
     <a href="{{ url_for('admin_bp.suspicious_activity') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">warning</span> Suspicious Activity</a>
+    <a href="{{ url_for('admin_bp.btg_review') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">emergency</span> BTG Review</a>
     <a href="{{ url_for('api_bp.encryption_proof') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 text-sm transition-colors rounded-lg"><span class="material-symbols-outlined text-sm">lock</span> Encryption Proof</a>
   </nav>
   <div class="px-3 py-4 border-t border-slate-100">
@@ -98,11 +100,30 @@ tailwind.config={theme:{extend:{colors:{
     <span class="text-on-surface font-medium">Add New User</span>
   </nav>
 
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="mb-6 space-y-2 max-w-2xl">
+    {% for category, message in messages %}
+    <div class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium
+      {% if category == 'success' %}bg-tertiary-fixed text-on-tertiary-fixed-variant
+      {% elif category == 'error' %}bg-error-container text-on-error-container
+      {% else %}bg-primary-fixed text-on-primary-fixed-variant{% endif %}">
+      <span class="material-symbols-outlined text-sm">
+        {% if category == 'success' %}check_circle{% elif category == 'error' %}error{% else %}info{% endif %}
+      </span>
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+
   <h1 class="text-2xl font-black tracking-tight mb-7">Add New User</h1>
 
   <!-- Form Card -->
   <div class="max-w-2xl bg-surface-container-lowest rounded-3xl tonal-shadow p-10">
-    <form id="registerForm" novalidate>
+    <form id="registerForm" method="POST" action="{{ url_for('admin_bp.register_user') }}" novalidate>
 
       <!-- Section 1: Personal Info -->
       <div class="mb-8">
@@ -110,60 +131,70 @@ tailwind.config={theme:{extend:{colors:{
         <div class="space-y-4">
           <div>
             <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Full Name</label>
-            <input id="fullName" type="text" placeholder="e.g. Dr. Amara Diallo" class="input-field"/>
+            <input id="fullName" name="full_name" type="text" placeholder="e.g. Dr. Amara Diallo" class="input-field" required/>
             <p id="nameErr" class="text-xs text-error mt-1 hidden">Full name is required.</p>
           </div>
           <div>
             <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Email Address</label>
-            <input id="email" type="email" placeholder="e.g. amara@vitalis.ehr" class="input-field"/>
+            <input id="email" name="email" type="email" placeholder="e.g. amara@vitalis.ehr" class="input-field" required/>
             <p id="emailErr" class="text-xs text-error mt-1 hidden">Valid email address is required.</p>
           </div>
         </div>
       </div>
 
-      <!-- Section 2: Role Selection -->
+      <!-- Section 2: Role Selection (5 Roles) -->
       <div class="mb-8">
         <h2 class="text-xs font-bold uppercase tracking-widest text-secondary mb-5 pb-2 border-b border-surface-container">Account Role</h2>
         <div class="grid grid-cols-2 gap-3">
-          <div class="role-card p-4 rounded-2xl bg-surface-container-low" onclick="selectRole(this,'Admin')">
+          <div class="role-card p-4 rounded-2xl bg-surface-container-low" onclick="selectRole(this,'admin')">
             <div class="flex items-center gap-3 mb-2">
               <div class="w-9 h-9 rounded-xl bg-surface-container-highest flex items-center justify-center">
                 <span class="material-symbols-outlined text-on-surface-variant text-base" style="font-variation-settings:'FILL' 1;">admin_panel_settings</span>
               </div>
               <span class="font-bold text-sm">Admin</span>
             </div>
-            <p class="text-xs text-secondary">Full system access, user management</p>
-            <input type="radio" name="role" value="Admin" class="hidden"/>
+            <p class="text-xs text-secondary">Full system access, user management, audit logs</p>
+            <input type="radio" name="role" value="admin" class="hidden"/>
           </div>
-          <div class="role-card p-4 rounded-2xl bg-surface-container-low selected" onclick="selectRole(this,'Doctor')">
+          <div class="role-card p-4 rounded-2xl bg-surface-container-low selected" onclick="selectRole(this,'doctor')">
             <div class="flex items-center gap-3 mb-2">
               <div class="w-9 h-9 rounded-xl bg-primary-fixed flex items-center justify-center">
                 <span class="material-symbols-outlined text-on-primary-fixed-variant text-base" style="font-variation-settings:'FILL' 1;">stethoscope</span>
               </div>
               <span class="font-bold text-sm">Doctor</span>
             </div>
-            <p class="text-xs text-secondary">Patient records, prescriptions, labs</p>
-            <input type="radio" name="role" value="Doctor" checked class="hidden"/>
+            <p class="text-xs text-secondary">Patient records, digital signatures, assigned patients</p>
+            <input type="radio" name="role" value="doctor" checked class="hidden"/>
           </div>
-          <div class="role-card p-4 rounded-2xl bg-surface-container-low" onclick="selectRole(this,'Nurse')">
+          <div class="role-card p-4 rounded-2xl bg-surface-container-low" onclick="selectRole(this,'nurse')">
             <div class="flex items-center gap-3 mb-2">
               <div class="w-9 h-9 rounded-xl bg-tertiary-fixed flex items-center justify-center">
                 <span class="material-symbols-outlined text-on-tertiary-fixed-variant text-base" style="font-variation-settings:'FILL' 1;">medical_services</span>
               </div>
               <span class="font-bold text-sm">Nurse</span>
             </div>
-            <p class="text-xs text-secondary">Ward monitoring, record creation</p>
-            <input type="radio" name="role" value="Nurse" class="hidden"/>
+            <p class="text-xs text-secondary">Record creation, field-level restricted access</p>
+            <input type="radio" name="role" value="nurse" class="hidden"/>
           </div>
-          <div class="role-card p-4 rounded-2xl bg-surface-container-low" onclick="selectRole(this,'Patient')">
+          <div class="role-card p-4 rounded-2xl bg-surface-container-low" onclick="selectRole(this,'lab_tech')">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
+                <span class="material-symbols-outlined text-amber-800 text-base" style="font-variation-settings:'FILL' 1;">biotech</span>
+              </div>
+              <span class="font-bold text-sm">Lab Technician</span>
+            </div>
+            <p class="text-xs text-secondary">Lab results only, chain of custody signing</p>
+            <input type="radio" name="role" value="lab_tech" class="hidden"/>
+          </div>
+          <div class="role-card p-4 rounded-2xl bg-surface-container-low" onclick="selectRole(this,'patient')">
             <div class="flex items-center gap-3 mb-2">
               <div class="w-9 h-9 rounded-xl bg-secondary-container flex items-center justify-center">
                 <span class="material-symbols-outlined text-on-secondary-container text-base" style="font-variation-settings:'FILL' 1;">person</span>
               </div>
               <span class="font-bold text-sm">Patient</span>
             </div>
-            <p class="text-xs text-secondary">View own records only</p>
-            <input type="radio" name="role" value="Patient" class="hidden"/>
+            <p class="text-xs text-secondary">View own records, field-level filtered access</p>
+            <input type="radio" name="role" value="patient" class="hidden"/>
           </div>
         </div>
       </div>
@@ -175,7 +206,7 @@ tailwind.config={theme:{extend:{colors:{
           <div>
             <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Password</label>
             <div class="relative">
-              <input id="password" type="password" placeholder="••••••••" class="input-field pr-10" oninput="checkStrength()"/>
+              <input id="password" name="password" type="password" placeholder="Enter a strong password" class="input-field pr-10" oninput="checkStrength()" required/>
               <button type="button" onclick="toggleVis('password','eye1')" class="absolute right-3 top-3 text-outline hover:text-primary transition-colors">
                 <span class="material-symbols-outlined text-sm" id="eye1">visibility</span>
               </button>
@@ -192,7 +223,7 @@ tailwind.config={theme:{extend:{colors:{
           <div>
             <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Confirm Password</label>
             <div class="relative">
-              <input id="confirmPassword" type="password" placeholder="••••••••" class="input-field pr-10"/>
+              <input id="confirmPassword" type="password" placeholder="Confirm password" class="input-field pr-10"/>
               <button type="button" onclick="toggleVis('confirmPassword','eye2')" class="absolute right-3 top-3 text-outline hover:text-primary transition-colors">
                 <span class="material-symbols-outlined text-sm" id="eye2">visibility</span>
               </button>
@@ -207,13 +238,13 @@ tailwind.config={theme:{extend:{colors:{
               <span class="material-symbols-outlined req-icon text-sm text-outline">radio_button_unchecked</span> At least 8 characters
             </div>
             <div class="req-item flex items-center gap-2 text-xs text-on-surface-variant" id="req-upper">
-              <span class="material-symbols-outlined req-icon text-sm text-outline">radio_button_unchecked</span> Uppercase letter (A–Z)
+              <span class="material-symbols-outlined req-icon text-sm text-outline">radio_button_unchecked</span> Uppercase letter (A-Z)
             </div>
             <div class="req-item flex items-center gap-2 text-xs text-on-surface-variant" id="req-lower">
-              <span class="material-symbols-outlined req-icon text-sm text-outline">radio_button_unchecked</span> Lowercase letter (a–z)
+              <span class="material-symbols-outlined req-icon text-sm text-outline">radio_button_unchecked</span> Lowercase letter (a-z)
             </div>
             <div class="req-item flex items-center gap-2 text-xs text-on-surface-variant" id="req-num">
-              <span class="material-symbols-outlined req-icon text-sm text-outline">radio_button_unchecked</span> Number (0–9)
+              <span class="material-symbols-outlined req-icon text-sm text-outline">radio_button_unchecked</span> Number (0-9)
             </div>
             <div class="req-item flex items-center gap-2 text-xs text-on-surface-variant" id="req-special">
               <span class="material-symbols-outlined req-icon text-sm text-outline">radio_button_unchecked</span> Special character (!@#$%^&amp;*)
@@ -226,15 +257,15 @@ tailwind.config={theme:{extend:{colors:{
       <div class="mb-8 bg-primary-fixed rounded-2xl p-5 flex gap-4">
         <span class="material-symbols-outlined text-primary flex-shrink-0" style="font-variation-settings:'FILL' 1;">info</span>
         <div>
-          <p class="text-sm font-bold text-on-primary-fixed mb-1">Role Assignment Notice</p>
-          <p class="text-xs text-on-primary-fixed/80 leading-relaxed">This account will be created with the selected role. Users cannot change their own role. Accounts are automatically locked after 3 consecutive failed login attempts. Only an Admin can unlock locked accounts.</p>
+          <p class="text-sm font-bold text-on-primary-fixed mb-1">Security Notice</p>
+          <p class="text-xs text-on-primary-fixed/80 leading-relaxed">An RSA-2048 key pair will be generated automatically for this user. The private key is encrypted with AES-256 and stored securely. Users cannot change their own role. Accounts lock after 3 failed login attempts.</p>
         </div>
       </div>
 
       <!-- Buttons -->
       <div class="flex gap-3">
         <a href="{{ url_for('admin_bp.list_users') }}" class="flex-1 py-3 text-center border border-outline-variant rounded-xl text-sm font-semibold hover:bg-surface-container transition-colors">Cancel</a>
-        <button type="submit" class="flex-1 py-3 bg-gradient-to-r from-primary to-primary-container text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-95">
+        <button type="submit" id="submitBtn" class="flex-1 py-3 bg-gradient-to-r from-primary to-primary-container text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-95">
           <span class="material-symbols-outlined text-sm">person_add</span> Create Account
         </button>
       </div>
@@ -286,8 +317,8 @@ function checkStrength() {
   document.getElementById('strengthLabel').style.color = colors[score] || '#727783';
 }
 
+/* Client-side validation before form submission */
 document.getElementById('registerForm').addEventListener('submit', function(e) {
-  e.preventDefault();
   let ok = true;
   const name = document.getElementById('fullName').value.trim();
   const email = document.getElementById('email').value.trim();
@@ -298,8 +329,14 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
   document.getElementById('emailErr').classList.toggle('hidden', !!(email && email.includes('@')));
   document.getElementById('matchErr').classList.toggle('hidden', pw === cpw);
 
-  if (!name || !email || !email.includes('@') || pw !== cpw) ok = false;
-  if (ok) alert('Account created successfully! (Demo mode — no backend connected)');
+  if (!name) ok = false;
+  if (!email || !email.includes('@')) ok = false;
+  if (pw !== cpw) ok = false;
+  if (!pw) ok = false;
+
+  if (!ok) {
+    e.preventDefault();
+  }
 });
 </script>
 </body>

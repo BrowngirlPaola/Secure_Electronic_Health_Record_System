@@ -7,7 +7,7 @@
 
 ---
 
-## Current Status: Phase 4 COMPLETE — Moving to Phase 5 (User Management & Registration)
+## Current Status: Phase 5 COMPLETE — Moving to Phase 6 (Audit Logs & Suspicious Activity)
 
 ---
 
@@ -145,17 +145,17 @@ Doctors currently see ALL patient records in the system. Per business requiremen
 
 ---
 
-## Phase 5: User Management & Registration (Dynamic)
+## Phase 5: User Management & Registration (Dynamic) (COMPLETE)
 
 ### Tasks
-- [ ] **5.1** `users.html` — Replace hardcoded user table with loop over `{{ users }}`
-- [ ] **5.2** Add real delete/unlock buttons with form POST actions
-- [ ] **5.3** `register.html` — Ensure form POSTs to correct route, 5 role options, password validation
-- [ ] **5.4** `assignments.html` — Admin assigns patients to doctors (dropdown + table)
-- [ ] **5.5** Test: create user -> appears in list -> login works -> RSA keys generated
-- [ ] **5.6** Test: assign patient to doctor -> doctor sees patient in dashboard
-- [ ] **5.7** Test: delete user -> removed from list
-- [ ] **5.8** Commit & push
+- [x] **5.1** `users.html` — Replace hardcoded user table with loop over `{{ users }}`
+- [x] **5.2** Add real delete/unlock buttons with form POST actions
+- [x] **5.3** `register.html` — Ensure form POSTs to correct route, 5 role options, password validation
+- [x] **5.4** `assignments.html` — Admin assigns patients to doctors (dropdown + table) — already dynamic from Phase 1
+- [x] **5.5** Test: create user -> appears in list -> login works -> RSA keys generated
+- [x] **5.6** Test: assign patient to doctor -> doctor sees patient in dashboard
+- [x] **5.7** Test: delete user -> removed from list
+- [x] **5.8** Commit & push
 
 ---
 
@@ -216,7 +216,7 @@ Doctors currently see ALL patient records in the system. Per business requiremen
 | 2026-05-10 | Phase 2 | Dynamic admin dashboard — all hardcoded data replaced with Jinja vars | Complete |
 | 2026-05-10 | Phase 3 | Dynamic role dashboards — doctor, nurse, patient all data-driven | Complete |
 | 2026-05-10 | Phase 4 | Dynamic records list with role-conditional sidebar and actions | Complete |
-| | Phase 5 | Dynamic user management + assignment UI | Pending |
+| 2026-05-10 | Phase 5 | Dynamic user management — real forms, 5 roles, delete/unlock actions | Complete |
 | | Phase 6 | Dynamic audit logs & suspicious activity | Pending |
 | | Phase 7 | Verify & polish all 6 security features | Pending |
 | | Phase 8 | Login & landing page polish | Pending |

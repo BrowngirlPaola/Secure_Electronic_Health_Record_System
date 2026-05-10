@@ -226,6 +226,7 @@ tailwind.config = {
                 </div>
               </div>
               <form method="POST" action="{{ url_for('admin_bp.unlock_user', user_id=acct.id) }}">
+                <input type="hidden" name="next" value="dashboard"/>
                 <button type="submit" class="px-3 py-1.5 border border-primary text-primary text-xs font-bold rounded-lg hover:bg-primary-fixed transition-colors">Unlock</button>
               </form>
             </div>
